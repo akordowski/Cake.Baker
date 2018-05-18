@@ -1,0 +1,4 @@
+# Cake
+**/artifacts/*
+**/tools/*
+!**/tools/packages.config

@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package>
+  <metadata>
+    <id>Cake.Baker</id>
+    <authors>Artur Kordowski</authors>
+    <owners>Artur Kordowski</owners>
+    <description>Re-usable build scripts for Cake.</description>
+    <summary>Re-usable build scripts for Cake.</summary>
+    <licenseUrl>https://github.com/akordowski/Cake.Baker/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/akordowski/Cake.Baker</projectUrl>
+    <iconUrl>https://cdn.rawgit.com/cake-contrib/graphics/a5cf0f881c390650144b2243ae551d5b9f836196/png/cake-contrib-medium.png</iconUrl>
+    <copyright>Copyright (c) Artur Kordowski</copyright>
+    <tags>cake build scripts</tags>
+    <version>0.1.0</version>
+  </metadata>
+  <files>
+    <file src="..\LICENSE" />
+    <file src="..\Cake.Baker\*.cake" target="content" />
+  </files>
+</package>
