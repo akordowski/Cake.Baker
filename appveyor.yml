@@ -9,3 +9,5 @@ init:
 
 build_script:
   - ps: .\build.ps1 -settings_skipverification=true -target PublishCakeBaker
+
+test: off
