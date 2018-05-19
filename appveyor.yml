@@ -1,0 +1,11 @@
+branches:
+  only:
+    - master
+
+skip_non_tags: true
+
+init:
+  - git config --global core.autocrlf true
+
+build_script:
+  - ps: .\build.ps1 -settings_skipverification=true -target PublishCakeBaker
