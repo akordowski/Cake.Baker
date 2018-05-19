@@ -71,8 +71,6 @@ public class Builder
         string repositoryBranch = null,
         bool isPrerelease = false,
         bool isPublicRepository = true,
-        bool shouldBuildNuGetSymbolPackage = false,
-        bool shouldRunNuGetPackageAnalysis = false,
         bool? shouldCreateCoverageReport = null,
         bool? shouldPostToTwitter = null,
         bool? shouldPublishToGitHub = null,
@@ -96,8 +94,6 @@ public class Builder
             repositoryBranch,
             isPrerelease,
             isPublicRepository,
-            shouldBuildNuGetSymbolPackage,
-            shouldRunNuGetPackageAnalysis,
             shouldCreateCoverageReport,
             shouldPostToTwitter,
             shouldPublishToGitHub,
@@ -183,12 +179,24 @@ public class Builder
     }
 
     public Builder SetToolSettings(
+        PlatformTarget buildPlatformTarget = PlatformTarget.MSIL,
+        MSBuildToolVersion buildMSBuildToolVersion = MSBuildToolVersion.Default,
+        int buildMaxCpuCount = 0,
+        bool buildTreatWarningsAsErrors = true,
+        bool nuGetSymbolPackage = false,
+        bool nuGetNoPackageAnalysis = true,
         string testCoverageFilter = null,
         string testCoverageExcludeByAttribute = null,
         string testCoverageExcludeByFile = null)
     {
         ToolSettings = new ToolSettings(
             this,
+            buildPlatformTarget,
+            buildMSBuildToolVersion,
+            buildMaxCpuCount,
+            buildTreatWarningsAsErrors,
+            nuGetSymbolPackage,
+            nuGetNoPackageAnalysis,
             testCoverageFilter,
             testCoverageExcludeByAttribute,
             testCoverageExcludeByFile);

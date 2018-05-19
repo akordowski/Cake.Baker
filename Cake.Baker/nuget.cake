@@ -31,8 +31,8 @@ Task("CreateNuGetPackages")
                 ReleaseNotes = Build.Parameters.ReleaseNotes?.Notes.ToArray(),
                 BasePath = basePath,
                 OutputDirectory = Build.Paths.Directories.PackagesNuGet,
-                Symbols = Build.Parameters.ShouldBuildNuGetSymbolPackage,
-                NoPackageAnalysis = !Build.Parameters.ShouldRunNuGetPackageAnalysis
+                Symbols = Build.ToolSettings.NuGetSymbolPackage,
+                NoPackageAnalysis = Build.ToolSettings.NuGetNoPackageAnalysis
             });
         }
     });

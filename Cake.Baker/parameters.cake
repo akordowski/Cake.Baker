@@ -45,9 +45,6 @@ public class Parameters
         !String.IsNullOrEmpty(_builder.Credentials.NuGet.ApiKey) &&
         !String.IsNullOrEmpty(_builder.Credentials.NuGet.Source);
 
-    public bool ShouldBuildNuGetSymbolPackage { get; }
-    public bool ShouldRunNuGetPackageAnalysis { get; }
-
     public bool ShouldCreateCoverageReport { get; }
     public bool ShouldPostToTwitter { get; }
     public bool ShouldPublishToGitHub { get; }
@@ -79,8 +76,6 @@ public class Parameters
         string repositoryBranch,
         bool isPrerelease,
         bool isPublicRepository,
-        bool shouldBuildNuGetSymbolPackage,
-        bool shouldRunNuGetPackageAnalysis,
         bool? shouldCreateCoverageReport,
         bool? shouldPostToTwitter,
         bool? shouldPublishToGitHub,
@@ -129,9 +124,6 @@ public class Parameters
         IsRunningOnUnix = _context.IsRunningOnUnix();
         IsRunningOnWindows = _context.IsRunningOnWindows();
         IsRunningOnAppVeyor = _buildSystem.AppVeyor.IsRunningOnAppVeyor;
-
-        ShouldBuildNuGetSymbolPackage = shouldBuildNuGetSymbolPackage;
-        ShouldRunNuGetPackageAnalysis = shouldRunNuGetPackageAnalysis;
 
         ShouldCreateCoverageReport = shouldCreateCoverageReport ?? false;
         ShouldPostToTwitter = shouldPostToTwitter ?? false;

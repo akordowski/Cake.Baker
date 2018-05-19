@@ -56,13 +56,16 @@ Task("Build")
     {
         Information("Building...");
 
+        var treatWarningsAsErrors = Build.ToolSettings.BuildTreatWarningsAsErrors.ToString().ToLower();
+
         if (Build.Parameters.IsRunningOnWindows)
         {
             var msBuildSettings = new MSBuildSettings()
                 .SetVerbosity(Verbosity.Minimal)
                 .SetConfiguration(Build.Parameters.Configuration)
+                .SetMaxCpuCount(Build.ToolSettings.BuildMaxCpuCount)
                 .WithTarget("Build")
-                .WithProperty("TreatWarningsAsErrors", "true");
+                .WithProperty("TreatWarningsAsErrors", treatWarningsAsErrors);
 
             MSBuild(Build.Paths.Files.Solution, msBuildSettings);
         }
@@ -72,7 +75,7 @@ Task("Build")
                 .SetVerbosity(Verbosity.Minimal)
                 .SetConfiguration(Build.Parameters.Configuration)
                 .WithTarget("Build")
-                .WithProperty("TreatWarningsAsErrors", "true");
+                .WithProperty("TreatWarningsAsErrors", treatWarningsAsErrors);
 
             XBuild(Build.Paths.Files.Solution, xBuildSettings);
         }
