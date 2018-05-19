@@ -8,19 +8,41 @@ public void CopyBuildOutput()
 
     foreach(var project in ParseSolution(Build.Paths.Files.Solution).GetProjects())
     {
-        var parsedProject = ParseProject(project.Path, Build.Parameters.Configuration, "AnyCPU");
-        var assemblyName = parsedProject.AssemblyName;
-        var isLibrary = parsedProject.IsLibrary();
-        var references = parsedProject.References;
+        var buildPlatformTarget = Build.ToolSettings.BuildPlatformTarget;
+        var platformTarget = buildPlatformTarget == PlatformTarget.MSIL ? "AnyCPU" : buildPlatformTarget.ToString();
 
-        if (parsedProject.AssemblyName == null || parsedProject.OutputType == null || parsedProject.OutputPaths?.Length == 0)
+        var parsedProject = ParseProject(project.Path, Build.Parameters.Configuration, platformTarget);
+        var projectPath = project.Path.FullPath.ToLower();
+        var assemblyName = parsedProject.AssemblyName;
+        var references = parsedProject.References;
+        var isLibrary = parsedProject.IsLibrary();
+
+        Information("----------------------------------------------------------------------------------------------------");
+        Information("Input BuildPlatformTarget: {0}", buildPlatformTarget.ToString());
+        Information("Using BuildPlatformTarget: {0}", platformTarget);
+
+        if(projectPath.Contains("wixproj"))
         {
-            Information("AssemblyName: {0}", parsedProject.AssemblyName);
-            Information("OutputType:   {0}", parsedProject.OutputType);
-            Information("OutputPaths:  {0}", parsedProject.OutputPaths);
+            Warning("Skipping wix project");
+            continue;
+        }
+
+        if(projectPath.Contains("shproj"))
+        {
+            Warning("Skipping shared project");
+            continue;
+        }
+
+        if (assemblyName == null || parsedProject.OutputType == null || parsedProject.OutputPaths.Length == 0)
+        {
+            Information("AssemblyName:      {0}", assemblyName);
+            Information("OutputType:        {0}", parsedProject.OutputType);
+            Information("OutputPaths Count: {0}", parsedProject.OutputPaths.Length);
 
             throw new Exception(string.Format("Unable to parse project file correctly: {0}", project.Path));
         }
+
+        /* -------------------------------------------------- */
 
         var isNUnitProject = false;
 
@@ -37,35 +59,34 @@ public void CopyBuildOutput()
             }
         }
 
-        DirectoryPath directoryPath = null;
+        /* -------------------------------------------------- */
+
+        DirectoryPath outputFolder = null;
 
         if (isLibrary && isNUnitProject)
         {
             Information("Project has an output type of library and is a NUnit Test Project: {0}", assemblyName);
-            directoryPath = Build.Paths.Directories.PublishedNUnitTests;
+            outputFolder = Build.Paths.Directories.PublishedNUnitTests;
         }
         else
         {
             Information("Project has an output type of library: {0}", assemblyName);
+            outputFolder = Build.Paths.Directories.PublishedLibraries;
+        }
+
+        foreach (var outputPath in parsedProject.OutputPaths)
+        {
+            var files = GetFiles(outputPath.FullPath + "/**/*");
+            outputFolder = outputFolder.Combine(assemblyName);
 
             if (parsedProject.IsVS2017ProjectFormat)
             {
-                foreach(var outputPath in parsedProject.OutputPaths)
-                {
-                }
-                continue;
+                outputFolder = outputFolder.Combine(outputPath.GetDirectoryName());
             }
-            else
-            {
-                directoryPath = Build.Paths.Directories.PublishedLibraries;
-            }
+
+            CleanDirectory(outputFolder);
+            CopyFiles(files, outputFolder, true);
         }
-
-        var files = GetFiles(parsedProject.OutputPaths[0].FullPath + "/**/*");
-        var outputFolder = directoryPath.Combine(assemblyName);
-
-        CleanDirectory(outputFolder);
-        CopyFiles(files, outputFolder, true);
     }
 }
 
