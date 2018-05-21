@@ -24,13 +24,19 @@ public class Directories
     public DirectoryPath Tmp { get; }
     public DirectoryPath PublishedApplications { get; }
     public DirectoryPath PublishedLibraries { get; }
-    public DirectoryPath PublishedWebsites { get; }
+    public DirectoryPath PublishedWebApplications { get; }
     public DirectoryPath PublishedNUnitTests { get; }
+    public DirectoryPath PublishedXUnitTests { get; }
+    public DirectoryPath PublishedMSTestTests { get; }
+    public DirectoryPath PublishedFixieTests { get; }
     public DirectoryPath Tests { get; }
     public DirectoryPath TestCoverage { get; }
     public DirectoryPath TestReport { get; }
     public DirectoryPath TestResults { get; }
     public DirectoryPath TestResultsNUnit { get; }
+    public DirectoryPath TestResultsXUnit { get; }
+    public DirectoryPath TestResultsMSTest { get; }
+    public DirectoryPath TestResultsFixie { get; }
 
     public Directories(
         ICakeContext context,
@@ -46,13 +52,19 @@ public class Directories
         DirectoryPath tmp,
         DirectoryPath publishedApplications,
         DirectoryPath publishedLibraries,
-        DirectoryPath publishedWebsites,
+        DirectoryPath publishedWebApplications,
         DirectoryPath publishedNUnitTests,
+        DirectoryPath publishedXUnitTests,
+        DirectoryPath publishedMSTestTests,
+        DirectoryPath publishedFixieTests,
         DirectoryPath tests,
         DirectoryPath testCoverage,
         DirectoryPath testReport,
         DirectoryPath testResults,
-        DirectoryPath testResultsNUnit)
+        DirectoryPath testResultsNUnit,
+        DirectoryPath testResultsXUnit,
+        DirectoryPath testResultsMSTest,
+        DirectoryPath testResultsFixie)
     {
         root = root ?? context.MakeAbsolute(context.Directory("./"));
         artifacts = artifacts ?? root.Combine("artifacts");
@@ -70,16 +82,24 @@ public class Directories
         Packages = packages;
         PackagesNuGet = packagesNuGet ?? packages.Combine("nuget");
         PackagesZip = packagesZip ?? packages.Combine("zip");
+
         Tmp = tmp;
         PublishedApplications = publishedApplications ?? tmp.Combine("PublishedApplications");
         PublishedLibraries = publishedLibraries ?? tmp.Combine("PublishedLibraries");
-        PublishedWebsites = publishedWebsites ?? tmp.Combine("PublishedWebsites");
+        PublishedWebApplications = publishedWebApplications ?? tmp.Combine("PublishedWebApplications");
         PublishedNUnitTests = publishedNUnitTests ?? tmp.Combine("PublishedNUnitTests");
+        PublishedXUnitTests = publishedXUnitTests ?? tmp.Combine("PublishedXUnitTests");
+        PublishedMSTestTests = publishedMSTestTests ?? tmp.Combine("PublishedMSTestTests");
+        PublishedFixieTests = publishedFixieTests ?? tmp.Combine("PublishedFixieTests");
+
         Tests = tests;
         TestCoverage = testCoverage ?? tests.Combine("coverage");
         TestReport = testReport ??  tests.Combine("report");
         TestResults = testResults;
         TestResultsNUnit = testResultsNUnit ?? testResults.Combine("NUnit");
+        TestResultsXUnit = testResultsXUnit ?? testResults.Combine("XUnit");
+        TestResultsMSTest = testResultsMSTest ?? testResults.Combine("MSTest");
+        TestResultsFixie = testResultsFixie ?? testResults.Combine("Fixie");
     }
 }
 

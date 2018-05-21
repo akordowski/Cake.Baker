@@ -2,6 +2,8 @@
 /* Global Variables */
 
 var Build = new Builder(Context, BuildSystem, target => RunTarget(target));
+var DotNetCoreTestProjects = new List<FilePath>();
+
 var publishingError = false;
 
 /* ---------------------------------------------------------------------------------------------------- */
@@ -14,7 +16,7 @@ Setup(context =>
 
     Build.Version.CalculateVersion();
 
-    Information("");
+    BlankLine();
     Information("Building version {0} of {1} using version {2} of Cake",
         Build.Version.SemVersion,
         Build.Parameters.Title,

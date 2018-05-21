@@ -3,76 +3,105 @@
 
 public void CopyBuildOutput()
 {
-    Information("");
+    BlankLine();
     Information("Copying build output...");
 
     foreach(var project in ParseSolution(Build.Paths.Files.Solution).GetProjects())
     {
         var buildPlatformTarget = Build.ToolSettings.BuildPlatformTarget;
         var platformTarget = buildPlatformTarget == PlatformTarget.MSIL ? "AnyCPU" : buildPlatformTarget.ToString();
-
-        var parsedProject = ParseProject(project.Path, Build.Parameters.Configuration, platformTarget);
         var projectPath = project.Path.FullPath.ToLower();
-        var assemblyName = parsedProject.AssemblyName;
-        var references = parsedProject.References;
-        var isLibrary = parsedProject.IsLibrary();
+        var parsedProject = ParseProject(project.Path, Build.Parameters.Configuration, platformTarget);
 
-        Information("----------------------------------------------------------------------------------------------------");
-        Information("Input BuildPlatformTarget: {0}", buildPlatformTarget.ToString());
-        Information("Using BuildPlatformTarget: {0}", platformTarget);
-
-        if(projectPath.Contains("wixproj"))
+        if (projectPath.Contains("wixproj"))
         {
             Warning("Skipping wix project");
             continue;
         }
 
-        if(projectPath.Contains("shproj"))
+        if (projectPath.Contains("shproj"))
         {
             Warning("Skipping shared project");
             continue;
         }
 
-        if (assemblyName == null || parsedProject.OutputType == null || parsedProject.OutputPaths.Length == 0)
+        if (parsedProject.AssemblyName == null || parsedProject.OutputType == null || parsedProject.OutputPaths.Length == 0)
         {
-            Information("AssemblyName:      {0}", assemblyName);
+            Information("AssemblyName:      {0}", parsedProject.AssemblyName);
             Information("OutputType:        {0}", parsedProject.OutputType);
             Information("OutputPaths Count: {0}", parsedProject.OutputPaths.Length);
 
-            throw new Exception(string.Format("Unable to parse project file correctly: {0}", project.Path));
+            throw new Exception($"Unable to parse project file correctly: {project.Path}");
         }
 
-        /* -------------------------------------------------- */
-
-        var isNUnitProject = false;
-
-        foreach (var reference in references)
+        if (parsedProject.IsNetCore && parsedProject.IsTestProject())
         {
-            Verbose("Reference Include: {0}", reference.Include);
-
-            var include = reference.Include.ToLower();
-
-            if (include.Contains("nunit.framework"))
-            {
-                isNUnitProject = true;
-                break;
-            }
+            DotNetCoreTestProjects.Add(parsedProject.ProjectFilePath);
+            continue;
         }
 
         /* -------------------------------------------------- */
 
+        SeparatorLine();
+        Information("Input BuildPlatformTarget: {0}", buildPlatformTarget.ToString());
+        Information("Using BuildPlatformTarget: {0}", platformTarget);
+        BlankLine();
+
+        /* -------------------------------------------------- */
+
+        var isApplication = !parsedProject.IsLibrary();
+        var isLibrary = parsedProject.IsLibrary();
+        var isTestProject = parsedProject.IsTestProject();
+        var isWebApplication = parsedProject.IsWebApplication();
+
+        var isNUnitProject = ContainsReference(parsedProject, "nunit");
+        var isXUnitProject = ContainsReference(parsedProject, "xunit");
+        var isMSTestProject = ContainsReference(parsedProject, "mstest", "unittestframework", "visualstudio.testplatform");
+        var isFixieProject = ContainsReference(parsedProject, "fixie");
+
+        string info = null;
         DirectoryPath outputFolder = null;
 
-        if (isLibrary && isNUnitProject)
+        if (isApplication)
         {
-            Information("Project has an output type of library and is a NUnit Test Project: {0}", assemblyName);
+            info = "Project has an output type of {0} application: {1}";
+            outputFolder = Build.Paths.Directories.PublishedApplications;
+        }
+        else if (isWebApplication)
+        {
+            info = "Project has an output type of {0} web application: {1}";
+            outputFolder = Build.Paths.Directories.PublishedWebApplications;
+        }
+        else if (isTestProject && isNUnitProject)
+        {
+            info = "Project has an output type of {0} library and is a NUnit Test Project: {1}";
             outputFolder = Build.Paths.Directories.PublishedNUnitTests;
         }
-        else
+        else if (isTestProject && isXUnitProject)
         {
-            Information("Project has an output type of library: {0}", assemblyName);
+            info = "Project has an output type of {0} library and is a XUnit Test Project: {1}";
+            outputFolder = Build.Paths.Directories.PublishedXUnitTests;
+        }
+        else if (isTestProject && isMSTestProject)
+        {
+            info = "Project has an output type of {0} library and is a MSTest Test Project: {1}";
+            outputFolder = Build.Paths.Directories.PublishedMSTestTests;
+        }
+        else if (isTestProject && isFixieProject)
+        {
+            info = "Project has an output type of {0} library and is a Fixie Test Project: {1}";
+            outputFolder = Build.Paths.Directories.PublishedFixieTests;
+        }
+        else if (isLibrary)
+        {
+            info = "Project has an output type of {0} library: {1}";
             outputFolder = Build.Paths.Directories.PublishedLibraries;
         }
+
+        var projectTarget = GetProjectTarget(parsedProject);
+        var assemblyName = parsedProject.AssemblyName;
+
+        Information(info, projectTarget, assemblyName);
 
         foreach (var outputPath in parsedProject.OutputPaths)
         {
@@ -90,6 +119,56 @@ public void CopyBuildOutput()
     }
 }
 
+private bool ContainsReference(CustomProjectParserResult parsedProject, params string[] values)
+{
+    List<string> references = new List<string>();
+    references.AddRange(parsedProject.References.Select(o => o.Include.ToLower()));
+    references.AddRange(parsedProject.PackageReferences.Select(p => p.Name.ToLower()));
+
+    foreach(var reference in references)
+    {
+        foreach(var value in values)
+        {
+            if (reference.Contains(value))
+            {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+private string GetProjectTarget(CustomProjectParserResult parsedProject)
+{
+    var target = "";
+
+    if (parsedProject.IsNetCore)
+    {
+        target = ".Net Core";
+    }
+    else if (parsedProject.IsNetFramework)
+    {
+        target = ".Net Framework";
+    }
+    else if (parsedProject.IsNetStandard)
+    {
+        target = ".Net Standard";
+    }
+
+    return target;
+}
+
+public void BlankLine()
+{
+    Information("");
+}
+
+public void SeparatorLine(int count = 100)
+{
+    Information(new String('-', count));
+}
+
 public void Print(object obj, bool print)
 {
     if (print)
@@ -98,13 +177,13 @@ public void Print(object obj, bool print)
         var properties = type.GetProperties();
         var padCount = properties.Select(p => p.Name.Length).Max() + 2;
 
-        Context.Information("");
-        Context.Information(type.Name);
-        Context.Information("----------------------------------------");
+        BlankLine();
+        Information(type.Name);
+        SeparatorLine(50);
 
         foreach (var property in properties)
         {
-            Context.Information((property.Name + ":").PadRight(padCount) + "{0}", property.GetValue(obj, null));
+            Information((property.Name + ":").PadRight(padCount) + "{0}", property.GetValue(obj, null));
         }
     }
 }
@@ -115,14 +194,14 @@ public void Print(string name, Dictionary<string, string> items)
 
     if (!String.IsNullOrWhiteSpace(name))
     {
-        Context.Information("");
-        Context.Information(name);
-        Context.Information("----------------------------------------");
+        BlankLine();
+        Information(name);
+        SeparatorLine(50);
     }
 
     foreach (var item in items)
     {
-        Context.Information((item.Key + ":").PadRight(padCount) + "{0}", item.Value);
+        Information((item.Key + ":").PadRight(padCount) + "{0}", item.Value);
     }
 }
 
