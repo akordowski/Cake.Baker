@@ -45,12 +45,14 @@ public class Parameters
         !String.IsNullOrEmpty(_builder.Credentials.NuGet.ApiKey) &&
         !String.IsNullOrEmpty(_builder.Credentials.NuGet.Source);
 
-    public bool ShouldCreateCoverageReport { get; }
     public bool ShouldPostToTwitter { get; }
     public bool ShouldPublishToGitHub { get; }
     public bool ShouldPublishToMyGet { get; }
     public bool ShouldPublishToNuGet { get; }
     public bool ShouldRunGitVersion { get; }
+    public bool ShouldRunOpenCover { get; }
+    public bool ShouldRunReportGenerator { get; }
+    public bool ShouldRunReportUnit { get; }
 
     public bool PrintAllInfo { get; }
     public bool PrintVersionInfo { get; }
@@ -76,12 +78,14 @@ public class Parameters
         string repositoryBranch,
         bool isPrerelease,
         bool isPublicRepository,
-        bool? shouldCreateCoverageReport,
         bool? shouldPostToTwitter,
         bool? shouldPublishToGitHub,
         bool? shouldPublishToMyGet,
         bool? shouldPublishToNuGet,
         bool? shouldRunGitVersion,
+        bool? shouldRunOpenCover,
+        bool? shouldRunReportGenerator,
+        bool? shouldRunReportUnit,
         bool? printAllInfo,
         bool? printVersionInfo,
         bool? printParametersInfo,
@@ -125,7 +129,6 @@ public class Parameters
         IsRunningOnWindows = _context.IsRunningOnWindows();
         IsRunningOnAppVeyor = _buildSystem.AppVeyor.IsRunningOnAppVeyor;
 
-        ShouldCreateCoverageReport = shouldCreateCoverageReport ?? false;
         ShouldPostToTwitter = shouldPostToTwitter ?? false;
 
         ShouldPublishToMyGet = shouldPublishToMyGet ??
@@ -147,6 +150,9 @@ public class Parameters
                                 IsTagged;
 
         ShouldRunGitVersion = shouldRunGitVersion ?? _context.IsRunningOnWindows();
+        ShouldRunOpenCover = shouldRunOpenCover ?? _context.IsRunningOnWindows();
+        ShouldRunReportGenerator = shouldRunReportGenerator ?? _context.IsRunningOnWindows();
+        ShouldRunReportUnit = shouldRunReportUnit ?? _context.IsRunningOnWindows();
 
         PrintAllInfo = printAllInfo ?? false;
         PrintVersionInfo = printVersionInfo ?? (printAllInfo ?? true);

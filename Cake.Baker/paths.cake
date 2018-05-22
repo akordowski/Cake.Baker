@@ -17,11 +17,11 @@ public class Directories
     public DirectoryPath Source { get; }
     public DirectoryPath Artifacts { get; }
     public DirectoryPath Docs { get; }
-    public DirectoryPath Log { get; }
+    public DirectoryPath Logs { get; }
     public DirectoryPath Packages { get; }
     public DirectoryPath PackagesNuGet { get; }
     public DirectoryPath PackagesZip { get; }
-    public DirectoryPath Tmp { get; }
+    public DirectoryPath Published { get; }
     public DirectoryPath PublishedApplications { get; }
     public DirectoryPath PublishedLibraries { get; }
     public DirectoryPath PublishedWebApplications { get; }
@@ -31,12 +31,10 @@ public class Directories
     public DirectoryPath PublishedFixieTests { get; }
     public DirectoryPath Tests { get; }
     public DirectoryPath TestCoverage { get; }
-    public DirectoryPath TestReport { get; }
+    public DirectoryPath TestReports { get; }
+    public DirectoryPath TestReportGenerator { get; }
+    public DirectoryPath TestReportUnit { get; }
     public DirectoryPath TestResults { get; }
-    public DirectoryPath TestResultsNUnit { get; }
-    public DirectoryPath TestResultsXUnit { get; }
-    public DirectoryPath TestResultsMSTest { get; }
-    public DirectoryPath TestResultsFixie { get; }
 
     public Directories(
         ICakeContext context,
@@ -45,11 +43,11 @@ public class Directories
         DirectoryPath source,
         DirectoryPath artifacts,
         DirectoryPath docs,
-        DirectoryPath log,
+        DirectoryPath logs,
         DirectoryPath packages,
         DirectoryPath packagesNuGet,
         DirectoryPath packagesZip,
-        DirectoryPath tmp,
+        DirectoryPath published,
         DirectoryPath publishedApplications,
         DirectoryPath publishedLibraries,
         DirectoryPath publishedWebApplications,
@@ -59,47 +57,44 @@ public class Directories
         DirectoryPath publishedFixieTests,
         DirectoryPath tests,
         DirectoryPath testCoverage,
-        DirectoryPath testReport,
-        DirectoryPath testResults,
-        DirectoryPath testResultsNUnit,
-        DirectoryPath testResultsXUnit,
-        DirectoryPath testResultsMSTest,
-        DirectoryPath testResultsFixie)
+        DirectoryPath testReports,
+        DirectoryPath testReportGenerator,
+        DirectoryPath testReportUnit,
+        DirectoryPath testResults)
     {
         root = root ?? context.MakeAbsolute(context.Directory("./"));
         artifacts = artifacts ?? root.Combine("artifacts");
         packages = packages ?? artifacts.Combine("packages");
-        tmp = tmp ?? artifacts.Combine("tmp");
+        published = published ?? artifacts.Combine("published");
         tests = tests ?? artifacts.Combine("tests");
-        testResults = testResults ?? tests.Combine("results");
+        testReports = testReports ??  tests.Combine("reports");
 
         Root = root;
         Nuspec = nuspec ?? root.Combine("nuspec");
         Source = source ?? root.Combine("src");
         Artifacts = artifacts ?? root.Combine("artifacts");
         Docs = docs ?? artifacts.Combine("docs");
-        Log = log ?? artifacts.Combine("log");
+        Logs = logs ?? artifacts.Combine("logs");
+
         Packages = packages;
         PackagesNuGet = packagesNuGet ?? packages.Combine("nuget");
         PackagesZip = packagesZip ?? packages.Combine("zip");
 
-        Tmp = tmp;
-        PublishedApplications = publishedApplications ?? tmp.Combine("PublishedApplications");
-        PublishedLibraries = publishedLibraries ?? tmp.Combine("PublishedLibraries");
-        PublishedWebApplications = publishedWebApplications ?? tmp.Combine("PublishedWebApplications");
-        PublishedNUnitTests = publishedNUnitTests ?? tmp.Combine("PublishedNUnitTests");
-        PublishedXUnitTests = publishedXUnitTests ?? tmp.Combine("PublishedXUnitTests");
-        PublishedMSTestTests = publishedMSTestTests ?? tmp.Combine("PublishedMSTestTests");
-        PublishedFixieTests = publishedFixieTests ?? tmp.Combine("PublishedFixieTests");
+        Published = published;
+        PublishedApplications = publishedApplications ?? published.Combine("Applications");
+        PublishedLibraries = publishedLibraries ?? published.Combine("Libraries");
+        PublishedWebApplications = publishedWebApplications ?? published.Combine("WebApplications");
+        PublishedNUnitTests = publishedNUnitTests ?? published.Combine("NUnitTests");
+        PublishedXUnitTests = publishedXUnitTests ?? published.Combine("XUnitTests");
+        PublishedMSTestTests = publishedMSTestTests ?? published.Combine("MSTestTests");
+        PublishedFixieTests = publishedFixieTests ?? published.Combine("FixieTests");
 
         Tests = tests;
         TestCoverage = testCoverage ?? tests.Combine("coverage");
-        TestReport = testReport ??  tests.Combine("report");
-        TestResults = testResults;
-        TestResultsNUnit = testResultsNUnit ?? testResults.Combine("NUnit");
-        TestResultsXUnit = testResultsXUnit ?? testResults.Combine("XUnit");
-        TestResultsMSTest = testResultsMSTest ?? testResults.Combine("MSTest");
-        TestResultsFixie = testResultsFixie ?? testResults.Combine("Fixie");
+        TestReports = testReports;
+        TestReportGenerator = testReportGenerator ?? testReports.Combine("ReportGenerator");
+        TestReportUnit = testReportUnit ?? testReports.Combine("ReportUnit");
+        TestResults = testResults ?? tests.Combine("results");
     }
 }
 
@@ -107,29 +102,48 @@ public class Files
 {
     public FilePath License { get; }
     public FilePath ReleaseNotes { get; }
-    public FilePath GitReleaseNotes { get; }
-    public FilePath BuildLog { get; }
-    public FilePath TestCoverageOutput { get; }
     public FilePath Solution { get; }
     public FilePath SolutionInfo { get; }
+
+    public FilePath GitReleaseNotes { get; }
+    public FilePath BuildLog { get; }
+    public FilePath NUnitOutputFile { get; }
+
+    public FilePath OpenCover { get; }
+    public FilePath NUnitTestResults { get; }
+    public FilePath XUnitTestResults { get; }
+    public FilePath MSTestTestResults { get; }
+    public FilePath FixieTestResults { get; }
 
     public Files(
         ICakeContext context,
         Directories directories,
         FilePath license,
         FilePath releaseNotes,
+        FilePath solution,
+        FilePath solutionInfo,
         FilePath gitReleaseNotes,
         FilePath buildLog,
-        FilePath testCoverageOutput,
-        FilePath solution,
-        FilePath solutionInfo)
+        FilePath nunitOutputFile,
+        FilePath openCover,
+        FilePath nunitTestResults,
+        FilePath xunitTestResults,
+        FilePath msTestTestResults,
+        FilePath fixieTestResults)
     {
         License = license ?? directories.Root.CombineWithFilePath("LICENSE");
         ReleaseNotes = releaseNotes ?? directories.Root.CombineWithFilePath("RELEASENOTES.md");
-        GitReleaseNotes = gitReleaseNotes ?? directories.Artifacts.CombineWithFilePath("GITRELEASENOTES.md");
-        BuildLog = buildLog ?? directories.Log.CombineWithFilePath("MSBuild.log");
-        TestCoverageOutput = testCoverageOutput ?? directories.TestCoverage.CombineWithFilePath("OpenCover.xml");
         Solution = solution ?? context.GetFiles("./**/*.sln").FirstOrDefault();
         SolutionInfo = solutionInfo ?? context.GetFiles("./**/SolutionInfo.cs").FirstOrDefault();
+
+        GitReleaseNotes = gitReleaseNotes ?? directories.Artifacts.CombineWithFilePath("GitReleaseNotes.md");
+        BuildLog = buildLog ?? directories.Logs.CombineWithFilePath("MSBuild.log");
+        NUnitOutputFile = nunitOutputFile ?? directories.Logs.CombineWithFilePath("NUnitOutputFile.log");
+
+        OpenCover = openCover ?? directories.TestCoverage.CombineWithFilePath("OpenCover.xml");
+        NUnitTestResults = nunitTestResults ?? directories.TestResults.CombineWithFilePath("NUnitTestResults.xml");
+        XUnitTestResults = xunitTestResults ?? directories.TestResults.CombineWithFilePath("XUnitTestResults.xml");
+        MSTestTestResults = msTestTestResults ?? directories.TestResults.CombineWithFilePath("MSTestTestResults.xml");
+        FixieTestResults = fixieTestResults ?? directories.TestResults.CombineWithFilePath("FixieTestResults.xml");
     }
 }
