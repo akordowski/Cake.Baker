@@ -2,8 +2,6 @@
 /* Global Variables */
 
 var Build = new Builder(Context, BuildSystem, target => RunTarget(target));
-var DotNetCoreTestProjects = new List<FilePath>();
-
 var publishingError = false;
 
 /* ---------------------------------------------------------------------------------------------------- */
@@ -57,6 +55,10 @@ Task("Build")
     .Does(() =>
     {
         Information("Building...");
+        BlankLine();
+        Information("Input BuildPlatformTarget: {0}", Build.ToolSettings.BuildPlatformTarget);
+        Information("Using BuildPlatformTarget: {0}", Build.ToolSettings.UsingBuildPlatformTarget);
+        BlankLine();
 
         var treatWarningsAsErrors = Build.ToolSettings.BuildTreatWarningsAsErrors.ToString().ToLower();
 
@@ -89,14 +91,15 @@ Task("Build")
 /* Execution */
 
 Task("Default")
-    .IsDependentOn("PrintAppVeyorEnvironmentVariables")
+    .IsDependentOn("AppVeyorPrintEnvironmentVariables")
     .IsDependentOn("ShowInfo")
     .IsDependentOn("Clean")
     .IsDependentOn("Restore")
     .IsDependentOn("Build")
     .IsDependentOn("Test")
     .IsDependentOn("CreateNuGetPackages")
-    .IsDependentOn("UploadAppVeyorArtifacts")
+    .IsDependentOn("AppVeyorUploadArtifacts")
+    .IsDependentOn("AppVeyorUploadTestResults")
     .IsDependentOn("PublishNuGetPackages")
     .IsDependentOn("PublishMyGetPackages")
     .IsDependentOn("PublishGitHubRelease")

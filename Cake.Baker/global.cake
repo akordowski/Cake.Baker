@@ -6,12 +6,9 @@ public void CopyBuildOutput()
     BlankLine();
     Information("Copying build output...");
 
-    foreach(var project in ParseSolution(Build.Paths.Files.Solution).GetProjects())
+    foreach(var parsedProject in Build.Projects.ParsedProjects)
     {
-        var buildPlatformTarget = Build.ToolSettings.BuildPlatformTarget;
-        var platformTarget = buildPlatformTarget == PlatformTarget.MSIL ? "AnyCPU" : buildPlatformTarget.ToString();
-        var projectPath = project.Path.FullPath.ToLower();
-        var parsedProject = ParseProject(project.Path, Build.Parameters.Configuration, platformTarget);
+        var projectPath = parsedProject.ProjectFilePath.FullPath.ToLower();
 
         if (projectPath.Contains("wixproj"))
         {
@@ -31,90 +28,80 @@ public void CopyBuildOutput()
             Information("OutputType:        {0}", parsedProject.OutputType);
             Information("OutputPaths Count: {0}", parsedProject.OutputPaths.Length);
 
-            throw new Exception($"Unable to parse project file correctly: {project.Path}");
-        }
-
-        if (parsedProject.IsNetCore && parsedProject.IsTestProject())
-        {
-            DotNetCoreTestProjects.Add(parsedProject.ProjectFilePath);
-            continue;
+            throw new Exception($"Unable to parse project file correctly: {projectPath}");
         }
 
         /* -------------------------------------------------- */
 
-        SeparatorLine();
-        Information("Input BuildPlatformTarget: {0}", buildPlatformTarget.ToString());
-        Information("Using BuildPlatformTarget: {0}", platformTarget);
-        BlankLine();
-
-        /* -------------------------------------------------- */
-
-        var isApplication = !parsedProject.IsLibrary();
-        var isLibrary = parsedProject.IsLibrary();
-        var isTestProject = parsedProject.IsTestProject();
-        var isWebApplication = parsedProject.IsWebApplication();
-
-        var isNUnitProject = ContainsReference(parsedProject, "nunit");
-        var isXUnitProject = ContainsReference(parsedProject, "xunit");
-        var isMSTestProject = ContainsReference(parsedProject, "mstest", "unittestframework", "visualstudio.testplatform");
-        var isFixieProject = ContainsReference(parsedProject, "fixie");
-
-        string info = null;
-        DirectoryPath outputFolder = null;
-
-        if (isApplication)
+        if (!parsedProject.IsNetCore)
         {
-            info = "Project has an output type of {0} application: {1}";
-            outputFolder = Build.Paths.Directories.PublishedApplications;
-        }
-        else if (isWebApplication)
-        {
-            info = "Project has an output type of {0} web application: {1}";
-            outputFolder = Build.Paths.Directories.PublishedWebApplications;
-        }
-        else if (isTestProject && isNUnitProject)
-        {
-            info = "Project has an output type of {0} library and is a NUnit Test Project: {1}";
-            outputFolder = Build.Paths.Directories.PublishedNUnitTests;
-        }
-        else if (isTestProject && isXUnitProject)
-        {
-            info = "Project has an output type of {0} library and is a XUnit Test Project: {1}";
-            outputFolder = Build.Paths.Directories.PublishedXUnitTests;
-        }
-        else if (isTestProject && isMSTestProject)
-        {
-            info = "Project has an output type of {0} library and is a MSTest Test Project: {1}";
-            outputFolder = Build.Paths.Directories.PublishedMSTestTests;
-        }
-        else if (isTestProject && isFixieProject)
-        {
-            info = "Project has an output type of {0} library and is a Fixie Test Project: {1}";
-            outputFolder = Build.Paths.Directories.PublishedFixieTests;
-        }
-        else if (isLibrary)
-        {
-            info = "Project has an output type of {0} library: {1}";
-            outputFolder = Build.Paths.Directories.PublishedLibraries;
-        }
+            var isApplication = !parsedProject.IsLibrary();
+            var isLibrary = parsedProject.IsLibrary();
+            var isTestProject = parsedProject.IsTestProject();
+            var isWebApplication = parsedProject.IsWebApplication();
 
-        var projectTarget = GetProjectTarget(parsedProject);
-        var assemblyName = parsedProject.AssemblyName;
+            var isFixieProject = ContainsReference(parsedProject, "fixie");
+            var isMSTestProject = ContainsReference(parsedProject, "mstest", "unittestframework", "visualstudio.testplatform");
+            var isNUnit3Project = ContainsReference(parsedProject, "nunit");
+            var isXUnitProject = ContainsReference(parsedProject, "xunit");
 
-        Information(info, projectTarget, assemblyName);
+            string info = null;
+            DirectoryPath outputFolder = null;
 
-        foreach (var outputPath in parsedProject.OutputPaths)
-        {
-            var files = GetFiles(outputPath.FullPath + "/**/*");
-            outputFolder = outputFolder.Combine(assemblyName);
-
-            if (parsedProject.IsVS2017ProjectFormat)
+            if (isApplication)
             {
-                outputFolder = outputFolder.Combine(outputPath.GetDirectoryName());
+                info = "Project has an output type of {0} application: {1}";
+                outputFolder = Build.Paths.Directories.PublishedApplications;
+            }
+            else if (isWebApplication)
+            {
+                info = "Project has an output type of {0} web application: {1}";
+                outputFolder = Build.Paths.Directories.PublishedWebApplications;
+            }
+            else if (isTestProject && isFixieProject)
+            {
+                info = "Project has an output type of {0} library and is a Fixie Test Project: {1}";
+                outputFolder = Build.Paths.Directories.PublishedFixieTests;
+            }
+            else if (isTestProject && isMSTestProject)
+            {
+                info = "Project has an output type of {0} library and is a MSTest Test Project: {1}";
+                outputFolder = Build.Paths.Directories.PublishedMSTestTests;
+            }
+            else if (isTestProject && isNUnit3Project)
+            {
+                info = "Project has an output type of {0} library and is a NUnit3 Test Project: {1}";
+                outputFolder = Build.Paths.Directories.PublishedNUnit3Tests;
+            }
+            else if (isTestProject && isXUnitProject)
+            {
+                info = "Project has an output type of {0} library and is a XUnit Test Project: {1}";
+                outputFolder = Build.Paths.Directories.PublishedXUnitTests;
+            }
+            else if (isLibrary)
+            {
+                info = "Project has an output type of {0} library: {1}";
+                outputFolder = Build.Paths.Directories.PublishedLibraries;
             }
 
-            CleanDirectory(outputFolder);
-            CopyFiles(files, outputFolder, true);
+            var projectTarget = GetProjectTarget(parsedProject);
+            var assemblyName = parsedProject.AssemblyName;
+
+            Information(info, projectTarget, assemblyName);
+
+            foreach (var outputPath in parsedProject.OutputPaths)
+            {
+                var files = GetFiles(outputPath.FullPath + "/**/*");
+                outputFolder = outputFolder.Combine(assemblyName);
+
+                if (parsedProject.IsVS2017ProjectFormat)
+                {
+                    outputFolder = outputFolder.Combine(outputPath.GetDirectoryName());
+                }
+
+                CleanDirectory(outputFolder);
+                CopyFiles(files, outputFolder, true);
+            }
         }
     }
 }

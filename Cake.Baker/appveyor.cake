@@ -1,7 +1,7 @@
 /* ---------------------------------------------------------------------------------------------------- */
 /* Task Definitions */
 
-Task("PrintAppVeyorEnvironmentVariables")
+Task("AppVeyorPrintEnvironmentVariables")
     .WithCriteria(() => Build.Parameters.IsRunningOnAppVeyor)
     .Does(() =>
     {
@@ -38,15 +38,65 @@ Task("PrintAppVeyorEnvironmentVariables")
         Print("", values);
     });
 
-Task("UploadAppVeyorArtifacts")
+Task("AppVeyorUploadArtifacts")
     .WithCriteria(() => Build.Parameters.IsRunningOnAppVeyor)
     .WithCriteria(() => DirectoryExists(Build.Paths.Directories.Packages))
     .Does(() =>
 {
     var packages = GetFiles(Build.Paths.Directories.Packages + "/**/*");
 
-    foreach (var package in packages)
+    if (packages.Any())
     {
-        AppVeyor.UploadArtifact(package);
+        Information("Uploading Artifacts.");
+
+        foreach (var package in packages)
+        {
+            AppVeyor.UploadArtifact(package);
+        }
     }
 });
+
+Task("AppVeyorUploadTestResults")
+    .WithCriteria(() => Build.Parameters.IsRunningOnAppVeyor)
+    .WithCriteria(() => DirectoryExists(Build.Paths.Directories.TestResults))
+    .Does(() =>
+{
+    if (FileExists(Build.Paths.Files.FixieTestResults))
+    {
+        Information("Uploading Fixie Test Results.");
+        AppVeyor.UploadTestResults(Build.Paths.Files.FixieTestResults, AppVeyorTestResultsType.XUnit);
+    }
+
+    if (FileExists(Build.Paths.Files.MSTestTestResults))
+    {
+        Information("Uploading MSTest Test Results.");
+        AppVeyor.UploadTestResults(Build.Paths.Files.MSTestTestResults, AppVeyorTestResultsType.MSTest);
+    }
+
+    if (FileExists(Build.Paths.Files.NUnitTestResults))
+    {
+        Information("Uploading NUnit Test Results.");
+        AppVeyor.UploadTestResults(Build.Paths.Files.NUnitTestResults, AppVeyorTestResultsType.NUnit);
+    }
+
+    if (FileExists(Build.Paths.Files.NUnit3TestResults))
+    {
+        Information("Uploading NUnit3 Test Results.");
+        AppVeyor.UploadTestResults(Build.Paths.Files.NUnit3TestResults, AppVeyorTestResultsType.NUnit3);
+    }
+
+    if (FileExists(Build.Paths.Files.XUnitTestResults))
+    {
+        Information("Uploading XUnit Test Results.");
+        AppVeyor.UploadTestResults(Build.Paths.Files.XUnitTestResults, AppVeyorTestResultsType.XUnit);
+    }
+});
+
+/* ---------------------------------------------------------------------------------------------------- */
+/* Execution */
+
+Task("AppVeyor")
+    .WithCriteria(() => Build.Parameters.IsRunningOnAppVeyor)
+    .IsDependentOn("AppVeyorPrintEnvironmentVariables")
+    .IsDependentOn("AppVeyorUploadArtifacts")
+    .IsDependentOn("AppVeyorUploadTestResults");

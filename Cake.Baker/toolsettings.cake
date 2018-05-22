@@ -4,6 +4,7 @@ public class ToolSettings
     public MSBuildToolVersion BuildMSBuildToolVersion { get; }
     public int BuildMaxCpuCount { get; }
     public bool BuildTreatWarningsAsErrors { get; }
+    public string UsingBuildPlatformTarget => BuildPlatformTarget == PlatformTarget.MSIL ? "AnyCPU" : BuildPlatformTarget.ToString();
 
     public bool NuGetSymbolPackage { get; }
     public bool NuGetNoPackageAnalysis { get; }

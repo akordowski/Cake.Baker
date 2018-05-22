@@ -6,6 +6,7 @@ public class Builder
     public Credentials Credentials { get; private set; }
     public Environment Environment { get; private set; }
     public Parameters Parameters { get; private set; }
+    public Projects Projects { get; private set; }
     public Paths Paths { get; private set; }
     public ToolSettings ToolSettings { get; private set; }
     public VersionInfo Version { get; private set; }
@@ -27,6 +28,8 @@ public class Builder
 
     public void Run()
     {
+        Projects = new Projects(this);
+
         _runTarget(Parameters.Target);
     }
 
@@ -71,12 +74,16 @@ public class Builder
         string repositoryBranch = null,
         bool isPrerelease = false,
         bool isPublicRepository = true,
-        bool? shouldCreateCoverageReport = null,
         bool? shouldPostToTwitter = null,
         bool? shouldPublishToGitHub = null,
         bool? shouldPublishToMyGet = null,
         bool? shouldPublishToNuGet = null,
+        bool shouldRunTests = true,
+        bool shouldRunIntegrationTests = false,
         bool? shouldRunGitVersion = null,
+        bool? shouldRunOpenCover = null,
+        bool? shouldRunReportGenerator = null,
+        bool? shouldRunReportUnit = null,
         bool? printAllInfo = null,
         bool? printVersionInfo = null,
         bool? printParametersInfo = null,
@@ -84,6 +91,10 @@ public class Builder
         bool? printFilesInfo = null,
         bool? printEnvironmentInfo = null,
         bool? printToolSettingsInfo = null,
+        string testFilePattern = null,
+        string testProjectPattern = null,
+        string integrationTestFilePattern = null,
+        string integrationTestProjectPattern = null,
         string publishMessage = null)
     {
         Parameters = new Parameters(
@@ -94,12 +105,16 @@ public class Builder
             repositoryBranch,
             isPrerelease,
             isPublicRepository,
-            shouldCreateCoverageReport,
             shouldPostToTwitter,
             shouldPublishToGitHub,
             shouldPublishToMyGet,
             shouldPublishToNuGet,
+            shouldRunTests,
+            shouldRunIntegrationTests,
             shouldRunGitVersion,
+            shouldRunOpenCover,
+            shouldRunReportGenerator,
+            shouldRunReportUnit,
             printAllInfo,
             printVersionInfo,
             printParametersInfo,
@@ -107,6 +122,10 @@ public class Builder
             printFilesInfo,
             printEnvironmentInfo,
             printToolSettingsInfo,
+            testFilePattern,
+            testProjectPattern,
+            integrationTestFilePattern,
+            integrationTestProjectPattern,
             publishMessage);
 
         return this;
@@ -118,33 +137,38 @@ public class Builder
         DirectoryPath sourceDirectoryPath = null,
         DirectoryPath artifactsDirectoryPath = null,
         DirectoryPath docsDirectoryPath = null,
-        DirectoryPath logDirectoryPath = null,
+        DirectoryPath logsDirectoryPath = null,
         DirectoryPath packagesDirectoryPath = null,
         DirectoryPath packagesNuGetDirectoryPath = null,
         DirectoryPath packagesZipDirectoryPath = null,
-        DirectoryPath tmpDirectoryPath = null,
+        DirectoryPath publishedDirectoryPath = null,
         DirectoryPath publishedApplicationsDirectoryPath = null,
         DirectoryPath publishedLibrariesDirectoryPath = null,
         DirectoryPath publishedWebApplicationsDirectoryPath = null,
-        DirectoryPath publishedNUnitTestsDirectoryPath = null,
-        DirectoryPath publishedXUnitTestsDirectoryPath = null,
-        DirectoryPath publishedMSTestTestsDirectoryPath = null,
         DirectoryPath publishedFixieTestsDirectoryPath = null,
+        DirectoryPath publishedMSTestTestsDirectoryPath = null,
+        DirectoryPath publishedNUnitTestsDirectoryPath = null,
+        DirectoryPath publishedNUnit3TestsDirectoryPath = null,
+        DirectoryPath publishedXUnitTestsDirectoryPath = null,
         DirectoryPath testsDirectoryPath = null,
         DirectoryPath testCoverageDirectoryPath = null,
-        DirectoryPath testReportDirectoryPath = null,
+        DirectoryPath testReportsDirectoryPath = null,
+        DirectoryPath testReportGeneratorDirectoryPath = null,
+        DirectoryPath testReportUnitDirectoryPath = null,
         DirectoryPath testResultsDirectoryPath = null,
-        DirectoryPath testResultsNUnitDirectoryPath = null,
-        DirectoryPath testResultsXUnitDirectoryPath = null,
-        DirectoryPath testResultsMSTestDirectoryPath = null,
-        DirectoryPath testResultsFixieDirectoryPath = null,
         FilePath licenseFilePath = null,
         FilePath releaseNotesFilePath = null,
+        FilePath solutionFilePath = null,
+        FilePath solutionInfoFilePath = null,
         FilePath gitReleaseNotesFilePath = null,
         FilePath buildLogFilePath = null,
-        FilePath testCoverageOutputFilePath = null,
-        FilePath solutionFilePath = null,
-        FilePath solutionInfoFilePath = null)
+        FilePath nunit3OutputFileFilePath = null,
+        FilePath openCoverFilePath = null,
+        FilePath fixieTestResultsFilePath = null,
+        FilePath msTestTestResultsFilePath = null,
+        FilePath nunitTestResultsFilePath = null,
+        FilePath nunit3TestResultsFilePath = null,
+        FilePath xunitTestResultsFilePath = null)
     {
         var directories = new Directories(
             Context,
@@ -153,37 +177,42 @@ public class Builder
             sourceDirectoryPath,
             artifactsDirectoryPath,
             docsDirectoryPath,
-            logDirectoryPath,
+            logsDirectoryPath,
             packagesDirectoryPath,
             packagesNuGetDirectoryPath,
             packagesZipDirectoryPath,
-            tmpDirectoryPath,
+            publishedDirectoryPath,
             publishedApplicationsDirectoryPath,
             publishedLibrariesDirectoryPath,
             publishedWebApplicationsDirectoryPath,
-            publishedNUnitTestsDirectoryPath,
-            publishedXUnitTestsDirectoryPath,
-            publishedMSTestTestsDirectoryPath,
             publishedFixieTestsDirectoryPath,
+            publishedMSTestTestsDirectoryPath,
+            publishedNUnitTestsDirectoryPath,
+            publishedNUnit3TestsDirectoryPath,
+            publishedXUnitTestsDirectoryPath,
             testsDirectoryPath,
             testCoverageDirectoryPath,
-            testReportDirectoryPath,
-            testResultsDirectoryPath,
-            testResultsNUnitDirectoryPath,
-            testResultsXUnitDirectoryPath,
-            testResultsMSTestDirectoryPath,
-            testResultsFixieDirectoryPath);
+            testReportsDirectoryPath,
+            testReportGeneratorDirectoryPath,
+            testReportUnitDirectoryPath,
+            testResultsDirectoryPath);
 
         var files = new Files(
             Context,
             directories,
             licenseFilePath,
             releaseNotesFilePath,
+            solutionFilePath,
+            solutionInfoFilePath,
             gitReleaseNotesFilePath,
             buildLogFilePath,
-            testCoverageOutputFilePath,
-            solutionFilePath,
-            solutionInfoFilePath);
+            nunit3OutputFileFilePath,
+            openCoverFilePath,
+            fixieTestResultsFilePath,
+            msTestTestResultsFilePath,
+            nunitTestResultsFilePath,
+            nunit3TestResultsFilePath,
+            xunitTestResultsFilePath);
 
         Paths = new Paths(directories, files);
 
