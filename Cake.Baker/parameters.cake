@@ -52,6 +52,7 @@ public class Parameters
     public bool ShouldRunTests { get; }
     public bool ShouldRunIntegrationTests { get; }
     public bool ShouldRunGitVersion { get; }
+    public bool ShouldRunDocFx { get; }
     public bool ShouldRunOpenCover { get; }
     public bool ShouldRunReportGenerator { get; }
     public bool ShouldRunReportUnit { get; }
@@ -91,6 +92,7 @@ public class Parameters
         bool shouldRunTests,
         bool shouldRunIntegrationTests,
         bool? shouldRunGitVersion,
+        bool? shouldRunDocFx,
         bool? shouldRunOpenCover,
         bool? shouldRunReportGenerator,
         bool? shouldRunReportUnit,
@@ -165,9 +167,10 @@ public class Parameters
         ShouldRunIntegrationTests = shouldRunIntegrationTests;
 
         ShouldRunGitVersion = shouldRunGitVersion ?? _context.IsRunningOnWindows();
-        ShouldRunOpenCover = shouldRunOpenCover ?? _context.IsRunningOnWindows();
-        ShouldRunReportGenerator = shouldRunReportGenerator ?? _context.IsRunningOnWindows();
-        ShouldRunReportUnit = shouldRunReportUnit ?? _context.IsRunningOnWindows();
+        ShouldRunDocFx = shouldRunDocFx ?? false;
+        ShouldRunOpenCover = shouldRunOpenCover ?? false;
+        ShouldRunReportGenerator = shouldRunReportGenerator ?? false;
+        ShouldRunReportUnit = shouldRunReportUnit ?? false;
 
         PrintAllInfo = printAllInfo ?? false;
         PrintVersionInfo = printVersionInfo ?? (printAllInfo ?? true);
