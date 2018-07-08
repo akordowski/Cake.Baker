@@ -52,6 +52,9 @@ Task("Restore")
 
 Task("Build")
     .WithCriteria(() => Build.Paths.Files.Solution.Exists())
+    .IsDependentOn("ShowInfo")
+    .IsDependentOn("Clean")
+    .IsDependentOn("Restore")
     .Does(() =>
     {
         Information("Building...");
@@ -91,17 +94,47 @@ Task("Build")
 /* Execution */
 
 Task("Default")
-    .IsDependentOn("AppVeyorPrintEnvironmentVariables")
-    .IsDependentOn("ShowInfo")
-    .IsDependentOn("Clean")
-    .IsDependentOn("Restore")
+    .IsDependentOn("Build");
+
+Task("Test")
+    .WithCriteria(() => Build.Parameters.ShouldRunTests)
     .IsDependentOn("Build")
+    .IsDependentOn("TestFixie")
+    .IsDependentOn("TestMSTest")
+    .IsDependentOn("TestNUnit3")
+    .IsDependentOn("TestXUnit")
+    .IsDependentOn("DotNetCoreTest")
+    .IsDependentOn("RunReportGenerator")
+    .IsDependentOn("RunReportUnit");
+
+Task("Package")
     .IsDependentOn("Test")
-    .IsDependentOn("CreateNuGetPackages")
-    .IsDependentOn("AppVeyorUploadArtifacts")
-    .IsDependentOn("AppVeyorUploadTestResults")
+    .IsDependentOn("CreateNuGetPackages");
+
+Task("Publish")
+    .IsDependentOn("Package")
     .IsDependentOn("PublishNuGetPackages")
     .IsDependentOn("PublishMyGetPackages")
-    .IsDependentOn("PublishGitHubRelease")
-    .IsDependentOn("SendMessageToTwitter")
-    ;
+    .IsDependentOn("PublishGitHubRelease");
+
+Task("PostMessage")
+    .IsDependentOn("Publish")
+    .IsDependentOn("PostMessageToTwitter");
+
+Task("Local")
+    .WithCriteria(() => Build.Parameters.IsLocalBuild)
+    .IsDependentOn("Build")
+    .IsDependentOn("Test")
+    .IsDependentOn("Package");
+
+Task("AppVeyor")
+    .WithCriteria(() => Build.Parameters.IsRunningOnAppVeyor)
+    .IsDependentOn("ShowInfo")
+    .IsDependentOn("AppVeyorPrintEnvironmentVariables")
+    .IsDependentOn("Build")
+    .IsDependentOn("Test")
+    .IsDependentOn("Package")
+    .IsDependentOn("AppVeyorUploadArtifacts")
+    .IsDependentOn("AppVeyorUploadTestResults")
+    .IsDependentOn("Publish")
+    .IsDependentOn("PostMessage");

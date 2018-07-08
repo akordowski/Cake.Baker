@@ -27,35 +27,51 @@ public class Parameters
     public bool IsRunningOnWindows { get; }
     public bool IsRunningOnAppVeyor { get; }
 
+    public bool ShouldRunGitVersion { get; }
+    public bool ShouldRunDocFx { get; }
+
+    public bool ShouldRunTests { get; }
+    public bool ShouldRunIntegrationTests { get; }
+
+    public bool ShouldRunNUnit3Tests { get; }
+    public bool ShouldRunXUnitTests { get; }
+    public bool ShouldRunMSTestTests { get; }
+    public bool ShouldRunFixieTests { get; }
+    public bool ShouldRunDotNetCoreTest { get; }
+
+    public bool ShouldRunOpenCover { get; }
+    public bool ShouldRunReportGenerator { get; }
+    public bool ShouldRunReportUnit { get; }
+
+    public bool ShouldPackageNuGet { get; }
+
+    public bool ShouldPublishToNuGet { get; }
+    public bool ShouldPublishToMyGet { get; }
+    public bool ShouldPublishToGitHub { get; }
+
+    public bool CanPublishToNuGet =>
+        !String.IsNullOrEmpty(_builder.Credentials.NuGet.ApiKey) &&
+        !String.IsNullOrEmpty(_builder.Credentials.NuGet.Source);
+
+    public bool CanPublishToMyGet =>
+        !String.IsNullOrEmpty(_builder.Credentials.MyGet.ApiKey) &&
+        !String.IsNullOrEmpty(_builder.Credentials.MyGet.Source);
+
+    public bool CanPublishToGitHub =>
+        !String.IsNullOrEmpty(_builder.Credentials.GitHub.Username) &&
+        !String.IsNullOrEmpty(_builder.Credentials.GitHub.Password);
+
+    public bool ShouldPostToTwitter { get; }
+
     public bool CanPostToTwitter =>
         !String.IsNullOrEmpty(_builder.Credentials.Twitter.ConsumerKey) &&
         !String.IsNullOrEmpty(_builder.Credentials.Twitter.ConsumerSecret) &&
         !String.IsNullOrEmpty(_builder.Credentials.Twitter.AccessToken) &&
         !String.IsNullOrEmpty(_builder.Credentials.Twitter.AccessTokenSecret);
 
-    public bool CanPublishToGitHub =>
-        !String.IsNullOrEmpty(_builder.Credentials.GitHub.Username) &&
-        !String.IsNullOrEmpty(_builder.Credentials.GitHub.Password);
-
-    public bool CanPublishToMyGet =>
-        !String.IsNullOrEmpty(_builder.Credentials.MyGet.ApiKey) &&
-        !String.IsNullOrEmpty(_builder.Credentials.MyGet.Source);
-
-    public bool CanPublishToNuGet =>
-        !String.IsNullOrEmpty(_builder.Credentials.NuGet.ApiKey) &&
-        !String.IsNullOrEmpty(_builder.Credentials.NuGet.Source);
-
-    public bool ShouldPostToTwitter { get; }
-    public bool ShouldPublishToGitHub { get; }
-    public bool ShouldPublishToMyGet { get; }
-    public bool ShouldPublishToNuGet { get; }
-    public bool ShouldRunTests { get; }
-    public bool ShouldRunIntegrationTests { get; }
-    public bool ShouldRunGitVersion { get; }
-    public bool ShouldRunDocFx { get; }
-    public bool ShouldRunOpenCover { get; }
-    public bool ShouldRunReportGenerator { get; }
-    public bool ShouldRunReportUnit { get; }
+    public bool ShouldAppVeyorPrintEnvironmentVariables { get; }
+    public bool ShouldAppVeyorUploadArtifacts { get; }
+    public bool ShouldAppVeyorUploadTestResults { get; }
 
     public bool PrintAllInfo { get; }
     public bool PrintVersionInfo { get; }
@@ -69,13 +85,15 @@ public class Parameters
     public string TestProjectPattern { get; }
     public string IntegrationTestFilePattern { get; }
     public string IntegrationTestProjectPattern { get; }
-    public string PublishMessage => String.Format(_publishMessage, _builder.Version.Version, Title);
+    public string PostMessage => String.Format(_postMessage, _builder.Version.Version, Title);
+    public string PostTwitterMessage => _postTwitterMessage != null ? String.Format(_postTwitterMessage, _builder.Version.Version, Title) : PostMessage;
 
     private readonly Builder _builder;
     private readonly ICakeContext _context;
     private readonly BuildSystem _buildSystem;
 
-    private string _publishMessage;
+    private string _postMessage;
+    private string _postTwitterMessage;
 
     public Parameters(
         Builder builder,
@@ -85,17 +103,26 @@ public class Parameters
         string repositoryBranch,
         bool isPrerelease,
         bool isPublicRepository,
-        bool? shouldPostToTwitter,
-        bool? shouldPublishToGitHub,
-        bool? shouldPublishToMyGet,
-        bool? shouldPublishToNuGet,
+        bool? shouldRunGitVersion,
+        bool shouldRunDocFx,
         bool shouldRunTests,
         bool shouldRunIntegrationTests,
-        bool? shouldRunGitVersion,
-        bool? shouldRunDocFx,
-        bool? shouldRunOpenCover,
-        bool? shouldRunReportGenerator,
-        bool? shouldRunReportUnit,
+        bool shouldRunNUnit3Tests,
+        bool shouldRunXUnitTests,
+        bool shouldRunMSTestTests,
+        bool shouldRunFixieTests,
+        bool shouldRunDotNetCoreTest,
+        bool shouldRunOpenCover,
+        bool shouldRunReportGenerator,
+        bool shouldRunReportUnit,
+        bool shouldPackageNuGet,
+        bool? shouldPublishToNuGet,
+        bool? shouldPublishToMyGet,
+        bool? shouldPublishToGitHub,
+        bool? shouldPostToTwitter,
+        bool shouldAppVeyorPrintEnvironmentVariables,
+        bool shouldAppVeyorUploadArtifacts,
+        bool shouldAppVeyorUploadTestResults,
         bool? printAllInfo,
         bool? printVersionInfo,
         bool? printParametersInfo,
@@ -107,7 +134,8 @@ public class Parameters
         string testProjectPattern,
         string integrationTestFilePattern,
         string integrationTestProjectPattern,
-        string publishMessage)
+        string postMessage,
+        string postTwitterMessage)
     {
         _builder = builder;
         _context = builder.Context;
@@ -143,15 +171,30 @@ public class Parameters
         IsRunningOnWindows = _context.IsRunningOnWindows();
         IsRunningOnAppVeyor = _buildSystem.AppVeyor.IsRunningOnAppVeyor;
 
-        ShouldPostToTwitter = shouldPostToTwitter ?? false;
+        ShouldRunGitVersion = shouldRunGitVersion ?? _context.IsRunningOnWindows();
+        ShouldRunDocFx = shouldRunDocFx;
 
-        ShouldPublishToMyGet = shouldPublishToMyGet ??
+        ShouldRunTests = shouldRunTests;
+        ShouldRunIntegrationTests = shouldRunIntegrationTests;
+        ShouldRunNUnit3Tests = shouldRunNUnit3Tests;
+        ShouldRunXUnitTests = shouldRunXUnitTests;
+        ShouldRunMSTestTests = shouldRunMSTestTests;
+        ShouldRunFixieTests = shouldRunFixieTests;
+        ShouldRunDotNetCoreTest = shouldRunDotNetCoreTest;
+
+        ShouldRunOpenCover = shouldRunOpenCover;
+        ShouldRunReportGenerator = shouldRunReportGenerator;
+        ShouldRunReportUnit = shouldRunReportUnit;
+
+        ShouldPackageNuGet = shouldPackageNuGet;
+
+        ShouldPublishToNuGet = shouldPublishToNuGet ??
                                !IsLocalBuild &&
                                !IsPullRequest &&
                                IsMainRepository &&
                                IsTagged;
 
-        ShouldPublishToNuGet = shouldPublishToNuGet ??
+        ShouldPublishToMyGet = shouldPublishToMyGet ??
                                !IsLocalBuild &&
                                !IsPullRequest &&
                                IsMainRepository &&
@@ -163,14 +206,11 @@ public class Parameters
                                 IsMainRepository &&
                                 IsTagged;
 
-        ShouldRunTests = shouldRunTests;
-        ShouldRunIntegrationTests = shouldRunIntegrationTests;
+        ShouldPostToTwitter = shouldPostToTwitter ?? !IsLocalBuild;
 
-        ShouldRunGitVersion = shouldRunGitVersion ?? _context.IsRunningOnWindows();
-        ShouldRunDocFx = shouldRunDocFx ?? false;
-        ShouldRunOpenCover = shouldRunOpenCover ?? false;
-        ShouldRunReportGenerator = shouldRunReportGenerator ?? false;
-        ShouldRunReportUnit = shouldRunReportUnit ?? false;
+        ShouldAppVeyorPrintEnvironmentVariables = shouldAppVeyorPrintEnvironmentVariables;
+        ShouldAppVeyorUploadArtifacts = shouldAppVeyorUploadArtifacts;
+        ShouldAppVeyorUploadTestResults = shouldAppVeyorUploadTestResults;
 
         PrintAllInfo = printAllInfo ?? false;
         PrintVersionInfo = printVersionInfo ?? (printAllInfo ?? true);
@@ -185,6 +225,7 @@ public class Parameters
         IntegrationTestFilePattern = integrationTestFilePattern ?? "/**/*.IntegrationTests.dll";
         IntegrationTestProjectPattern = integrationTestProjectPattern ?? @".*\.IntegrationTests\.csproj";
 
-        _publishMessage = publishMessage.DefaultValue("Version {0} of {1} Addin has just been released, https://www.nuget.org/packages/{1}.");
+        _postMessage = postMessage.DefaultValue("Version {0} of {1} Addin has just been released, https://www.nuget.org/packages/{1}.");
+        _postTwitterMessage = postTwitterMessage;
     }
 }

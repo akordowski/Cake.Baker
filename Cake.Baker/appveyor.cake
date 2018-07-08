@@ -3,6 +3,7 @@
 
 Task("AppVeyorPrintEnvironmentVariables")
     .WithCriteria(() => Build.Parameters.IsRunningOnAppVeyor)
+    .WithCriteria(() => Build.Parameters.ShouldAppVeyorPrintEnvironmentVariables)
     .Does(() =>
     {
         var values = new Dictionary<string, string>
@@ -40,6 +41,7 @@ Task("AppVeyorPrintEnvironmentVariables")
 
 Task("AppVeyorUploadArtifacts")
     .WithCriteria(() => Build.Parameters.IsRunningOnAppVeyor)
+    .WithCriteria(() => Build.Parameters.ShouldAppVeyorUploadArtifacts)
     .WithCriteria(() => DirectoryExists(Build.Paths.Directories.Packages))
     .Does(() =>
 {
@@ -58,6 +60,7 @@ Task("AppVeyorUploadArtifacts")
 
 Task("AppVeyorUploadTestResults")
     .WithCriteria(() => Build.Parameters.IsRunningOnAppVeyor)
+    .WithCriteria(() => Build.Parameters.ShouldAppVeyorUploadTestResults)
     .WithCriteria(() => DirectoryExists(Build.Paths.Directories.TestResults))
     .Does(() =>
 {
@@ -91,12 +94,3 @@ Task("AppVeyorUploadTestResults")
         AppVeyor.UploadTestResults(Build.Paths.Files.XUnitTestResults, AppVeyorTestResultsType.XUnit);
     }
 });
-
-/* ---------------------------------------------------------------------------------------------------- */
-/* Execution */
-
-Task("AppVeyor")
-    .WithCriteria(() => Build.Parameters.IsRunningOnAppVeyor)
-    .IsDependentOn("AppVeyorPrintEnvironmentVariables")
-    .IsDependentOn("AppVeyorUploadArtifacts")
-    .IsDependentOn("AppVeyorUploadTestResults");

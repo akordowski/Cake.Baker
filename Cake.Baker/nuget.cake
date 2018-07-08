@@ -25,6 +25,8 @@ Task("CreateNuGetPackages")
                 basePath = Build.Paths.Directories.PublishedApplications.Combine(nuspecName);
             }
 
+            Information("Setting BasePath '{0}' for nuspec file '{1}'", basePath, nuspecName);
+
             NuGetPack(nuspecFile, new NuGetPackSettings
             {
                 Version = Build.Version.SemVersion,

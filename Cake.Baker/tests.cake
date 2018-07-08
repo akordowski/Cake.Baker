@@ -2,13 +2,14 @@
 /* Task Definitions */
 
 Task("InstallOpenCover")
-    .WithCriteria(() => Build.Parameters.ShouldRunTests)
     .WithCriteria(() => Build.Parameters.IsRunningOnWindows)
+    .WithCriteria(() => Build.Parameters.ShouldRunTests)
+    .WithCriteria(() => Build.Parameters.ShouldRunOpenCover)
     .Does(() => RequireTool(OpenCoverTool, () => {}));
 
 Task("TestNUnit3")
     .IsDependentOn("InstallOpenCover")
-    .WithCriteria(() => Build.Parameters.ShouldRunTests)
+    .WithCriteria(() => Build.Parameters.ShouldRunNUnit3Tests)
     .WithCriteria(() => DirectoryExists(Build.Paths.Directories.PublishedNUnit3Tests))
     .Does(() => RequireTool(NUnitTool, () =>
     {
@@ -30,7 +31,7 @@ Task("TestNUnit3")
 
 Task("TestXUnit")
     .IsDependentOn("InstallOpenCover")
-    .WithCriteria(() => Build.Parameters.ShouldRunTests)
+    .WithCriteria(() => Build.Parameters.ShouldRunXUnitTests)
     .WithCriteria(() => DirectoryExists(Build.Paths.Directories.PublishedXUnitTests))
     .Does(() => RequireTool(XUnitTool, () =>
     {
@@ -50,7 +51,7 @@ Task("TestXUnit")
 
 Task("TestMSTest")
     .IsDependentOn("InstallOpenCover")
-    .WithCriteria(() => Build.Parameters.ShouldRunTests)
+    .WithCriteria(() => Build.Parameters.ShouldRunMSTestTests)
     .WithCriteria(() => DirectoryExists(Build.Paths.Directories.PublishedMSTestTests))
     .Does(() =>
     {
@@ -68,7 +69,7 @@ Task("TestMSTest")
 
 Task("TestFixie")
     .IsDependentOn("InstallOpenCover")
-    .WithCriteria(() => Build.Parameters.ShouldRunTests)
+    .WithCriteria(() => Build.Parameters.ShouldRunFixieTests)
     .WithCriteria(() => DirectoryExists(Build.Paths.Directories.PublishedFixieTests))
     .Does(() => RequireTool(FixieTool, () =>
     {
@@ -85,7 +86,7 @@ Task("TestFixie")
 
 Task("DotNetCoreTest")
     .IsDependentOn("InstallOpenCover")
-    .WithCriteria(() => Build.Parameters.ShouldRunTests)
+    .WithCriteria(() => Build.Parameters.ShouldRunDotNetCoreTest)
     .WithCriteria(() => Build.Projects.DotNetCoreTests.Any())
     .Does(() =>
     {
@@ -104,7 +105,6 @@ Task("DotNetCoreTest")
 
 Task("RunReportGenerator")
     .WithCriteria(() => Build.Parameters.IsRunningOnWindows)
-    .WithCriteria(() => Build.Parameters.ShouldRunTests)
     .WithCriteria(() => Build.Parameters.ShouldRunReportGenerator)
     .WithCriteria(() => FileExists(Build.Paths.Files.OpenCover))
     .Does(() => RequireTool(ReportGeneratorTool, () =>
@@ -117,7 +117,6 @@ Task("RunReportGenerator")
 
 Task("RunReportUnit")
     .WithCriteria(() => Build.Parameters.IsRunningOnWindows)
-    .WithCriteria(() => Build.Parameters.ShouldRunTests)
     .WithCriteria(() => Build.Parameters.ShouldRunReportUnit)
     .WithCriteria(() => DirectoryExists(Build.Paths.Directories.TestResults))
     .Does(() => RequireTool(ReportUnitTool, () =>
@@ -128,16 +127,6 @@ Task("RunReportUnit")
             Build.Paths.Directories.TestReportUnit,
             new ReportUnitSettings());
     }));
-
-Task("Test")
-    .WithCriteria(() => Build.Parameters.ShouldRunTests)
-    .IsDependentOn("TestFixie")
-    .IsDependentOn("TestMSTest")
-    .IsDependentOn("TestNUnit3")
-    .IsDependentOn("TestXUnit")
-    .IsDependentOn("DotNetCoreTest")
-    .IsDependentOn("RunReportGenerator")
-    .IsDependentOn("RunReportUnit");
 
 /* ---------------------------------------------------------------------------------------------------- */
 /* Methods */
