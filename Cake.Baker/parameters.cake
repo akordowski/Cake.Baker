@@ -10,6 +10,7 @@ public class Parameters
     public string Title { get; }
     public string RepositoryOwner { get; }
     public string RepositoryName { get; }
+    public string RepositoryFullName { get; }
     public string RepositoryBranch { get; }
     public bool IsPrerelease { get; }
 
@@ -160,10 +161,11 @@ public class Parameters
         Title = title;
         RepositoryOwner = repositoryOwner;
         RepositoryName = repositoryName.DefaultValue(title);
+        RepositoryFullName = $"{RepositoryOwner}/{RepositoryName}";
         RepositoryBranch = repositoryBranch.DefaultValue("master");
         IsPrerelease = isPrerelease;
 
-        IsMainRepository = repo.Name.Equals($"{repositoryOwner}/{repositoryName}", StringComparison.OrdinalIgnoreCase);
+        IsMainRepository = repo.Name.Equals(RepositoryFullName, StringComparison.OrdinalIgnoreCase);
         IsPublicRepository = isPublicRepository;
         IsMasterBranch = branch.Equals("master", StringComparison.OrdinalIgnoreCase);
         IsDevelopBranch = branch.Equals("develop", StringComparison.OrdinalIgnoreCase);
