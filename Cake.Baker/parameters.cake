@@ -43,8 +43,10 @@ public class Parameters
     public bool ShouldRunReportGenerator { get; }
     public bool ShouldRunReportUnit { get; }
 
+    public bool ShouldPackage { get; }
     public bool ShouldPackageNuGet { get; }
 
+    public bool ShouldPublish { get; }
     public bool ShouldPublishToNuGet { get; }
     public bool ShouldPublishToMyGet { get; }
     public bool ShouldPublishToGitHub { get; }
@@ -61,6 +63,7 @@ public class Parameters
         !String.IsNullOrEmpty(_builder.Credentials.GitHub.Username) &&
         !String.IsNullOrEmpty(_builder.Credentials.GitHub.Password);
 
+    public bool ShouldPost { get; }
     public bool ShouldPostToTwitter { get; }
 
     public bool CanPostToTwitter =>
@@ -115,10 +118,13 @@ public class Parameters
         bool shouldRunOpenCover,
         bool shouldRunReportGenerator,
         bool shouldRunReportUnit,
-        bool shouldPackageNuGet,
+        bool? shouldPackage,
+        bool? shouldPackageNuGet,
+        bool? shouldPublish,
         bool? shouldPublishToNuGet,
         bool? shouldPublishToMyGet,
         bool? shouldPublishToGitHub,
+        bool? shouldPost,
         bool? shouldPostToTwitter,
         bool shouldAppVeyorPrintEnvironmentVariables,
         bool shouldAppVeyorUploadArtifacts,
@@ -186,27 +192,26 @@ public class Parameters
         ShouldRunReportGenerator = shouldRunReportGenerator;
         ShouldRunReportUnit = shouldRunReportUnit;
 
-        ShouldPackageNuGet = shouldPackageNuGet;
+        ShouldPackage = shouldPackage ?? true;
+        ShouldPackageNuGet = shouldPackageNuGet ?? (shouldPackage ?? true);
 
-        ShouldPublishToNuGet = shouldPublishToNuGet ??
-                               !IsLocalBuild &&
-                               !IsPullRequest &&
-                               IsMainRepository &&
-                               IsTagged;
+        ShouldPublish = shouldPublish ??
+            !IsLocalBuild &&
+            !IsPullRequest &&
+            IsMainRepository &&
+            IsTagged;
 
-        ShouldPublishToMyGet = shouldPublishToMyGet ??
-                               !IsLocalBuild &&
-                               !IsPullRequest &&
-                               IsMainRepository &&
-                               IsTagged;
+        ShouldPublishToNuGet = shouldPublishToNuGet ?? ShouldPublish;
+        ShouldPublishToMyGet = shouldPublishToMyGet ?? ShouldPublish;
+        ShouldPublishToGitHub = shouldPublishToGitHub ?? ShouldPublish;
 
-        ShouldPublishToGitHub = shouldPublishToGitHub ??
-                                !IsLocalBuild &&
-                                !IsPullRequest &&
-                                IsMainRepository &&
-                                IsTagged;
+        ShouldPost = shouldPost ??
+            !IsLocalBuild &&
+            !IsPullRequest &&
+            IsMainRepository &&
+            IsTagged;
 
-        ShouldPostToTwitter = shouldPostToTwitter ?? !IsLocalBuild;
+        ShouldPostToTwitter = shouldPostToTwitter ?? ShouldPost;
 
         ShouldAppVeyorPrintEnvironmentVariables = shouldAppVeyorPrintEnvironmentVariables;
         ShouldAppVeyorUploadArtifacts = shouldAppVeyorUploadArtifacts;
