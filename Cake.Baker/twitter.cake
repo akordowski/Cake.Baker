@@ -1,7 +1,7 @@
 /* ---------------------------------------------------------------------------------------------------- */
 /* Task Definitions */
 
-Task("PostMessageToTwitter")
+Tasks.PostMessageToTwitterTask = Task("PostMessageToTwitter")
     .WithCriteria(() => !publishingError)
     .WithCriteria(() => Build.Parameters.ShouldPostToTwitter)
     .Does(() =>

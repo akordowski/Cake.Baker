@@ -1,7 +1,7 @@
 /* ---------------------------------------------------------------------------------------------------- */
 /* Task Definitions */
 
-Task("AppVeyorPrintEnvironmentVariables")
+Tasks.AppVeyorPrintEnvironmentVariablesTask = Task("AppVeyorPrintEnvironmentVariables")
     .WithCriteria(() => Build.Parameters.IsRunningOnAppVeyor)
     .WithCriteria(() => Build.Parameters.ShouldAppVeyorPrintEnvironmentVariables)
     .Does(() =>
@@ -39,7 +39,7 @@ Task("AppVeyorPrintEnvironmentVariables")
         Print("", values);
     });
 
-Task("AppVeyorUploadArtifacts")
+Tasks.AppVeyorUploadArtifactsTask = Task("AppVeyorUploadArtifacts")
     .WithCriteria(() => Build.Parameters.IsRunningOnAppVeyor)
     .WithCriteria(() => Build.Parameters.ShouldAppVeyorUploadArtifacts)
     .WithCriteria(() => DirectoryExists(Build.Paths.Directories.Packages))
@@ -58,7 +58,7 @@ Task("AppVeyorUploadArtifacts")
     }
 });
 
-Task("AppVeyorUploadTestResults")
+Tasks.AppVeyorUploadTestResultsTask = Task("AppVeyorUploadTestResults")
     .WithCriteria(() => Build.Parameters.IsRunningOnAppVeyor)
     .WithCriteria(() => Build.Parameters.ShouldAppVeyorUploadTestResults)
     .WithCriteria(() => DirectoryExists(Build.Paths.Directories.TestResults))

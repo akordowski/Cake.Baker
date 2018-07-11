@@ -1,13 +1,13 @@
 /* ---------------------------------------------------------------------------------------------------- */
 /* Task Definitions */
 
-Task("InstallOpenCover")
+Tasks.InstallOpenCoverTask = Task("InstallOpenCover")
     .WithCriteria(() => Build.Parameters.IsRunningOnWindows)
     .WithCriteria(() => Build.Parameters.ShouldRunTests)
     .WithCriteria(() => Build.Parameters.ShouldRunOpenCover)
     .Does(() => RequireTool(OpenCoverTool, () => {}));
 
-Task("TestNUnit3")
+Tasks.TestNUnit3Task = Task("TestNUnit3")
     .IsDependentOn("InstallOpenCover")
     .WithCriteria(() => Build.Parameters.ShouldRunNUnit3Tests)
     .WithCriteria(() => DirectoryExists(Build.Paths.Directories.PublishedNUnit3Tests))
@@ -29,7 +29,7 @@ Task("TestNUnit3")
         });
     }));
 
-Task("TestXUnit")
+Tasks.TestXUnitTask = Task("TestXUnit")
     .IsDependentOn("InstallOpenCover")
     .WithCriteria(() => Build.Parameters.ShouldRunXUnitTests)
     .WithCriteria(() => DirectoryExists(Build.Paths.Directories.PublishedXUnitTests))
@@ -49,7 +49,7 @@ Task("TestXUnit")
         });
     }));
 
-Task("TestMSTest")
+Tasks.TestMSTestTask = Task("TestMSTest")
     .IsDependentOn("InstallOpenCover")
     .WithCriteria(() => Build.Parameters.ShouldRunMSTestTests)
     .WithCriteria(() => DirectoryExists(Build.Paths.Directories.PublishedMSTestTests))
@@ -67,7 +67,7 @@ Task("TestMSTest")
         });
     });
 
-Task("TestFixie")
+Tasks.TestFixieTask = Task("TestFixie")
     .IsDependentOn("InstallOpenCover")
     .WithCriteria(() => Build.Parameters.ShouldRunFixieTests)
     .WithCriteria(() => DirectoryExists(Build.Paths.Directories.PublishedFixieTests))
@@ -84,7 +84,7 @@ Task("TestFixie")
         });
     }));
 
-Task("DotNetCoreTest")
+Tasks.DotNetCoreTestTask = Task("DotNetCoreTest")
     .IsDependentOn("InstallOpenCover")
     .WithCriteria(() => Build.Parameters.ShouldRunDotNetCoreTest)
     .WithCriteria(() => Build.Projects.DotNetCoreTests.Any())
@@ -103,7 +103,7 @@ Task("DotNetCoreTest")
         }
     });
 
-Task("RunReportGenerator")
+Tasks.RunReportGeneratorTask = Task("RunReportGenerator")
     .WithCriteria(() => Build.Parameters.IsRunningOnWindows)
     .WithCriteria(() => Build.Parameters.ShouldRunReportGenerator)
     .WithCriteria(() => FileExists(Build.Paths.Files.OpenCover))
@@ -115,7 +115,7 @@ Task("RunReportGenerator")
             Build.Paths.Directories.TestReportGenerator);
     }));
 
-Task("RunReportUnit")
+Tasks.RunReportUnitTask = Task("RunReportUnit")
     .WithCriteria(() => Build.Parameters.IsRunningOnWindows)
     .WithCriteria(() => Build.Parameters.ShouldRunReportUnit)
     .WithCriteria(() => DirectoryExists(Build.Paths.Directories.TestResults))

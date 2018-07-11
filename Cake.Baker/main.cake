@@ -24,7 +24,7 @@ Setup(context =>
 /* ---------------------------------------------------------------------------------------------------- */
 /* Task Definitions */
 
-Task("ShowInfo")
+Tasks.ShowInfoTask = Task("ShowInfo")
     .Does(() =>
     {
         Print(Build.Version, Build.Parameters.PrintVersionInfo);
@@ -35,14 +35,14 @@ Task("ShowInfo")
         Print(Build.ToolSettings, Build.Parameters.PrintToolSettingsInfo);
     });
 
-Task("Clean")
+Tasks.CleanTask = Task("Clean")
     .Does(() =>
     {
         Information("Cleaning...");
         CleanDirectory(Build.Paths.Directories.Artifacts);
     });
 
-Task("Restore")
+Tasks.RestoreTask = Task("Restore")
     .WithCriteria(() => Build.Paths.Files.Solution.Exists())
     .Does(() =>
     {
@@ -50,7 +50,7 @@ Task("Restore")
         NuGetRestore(Build.Paths.Files.Solution);
     });
 
-Task("Build")
+Tasks.BuildTask = Task("Build")
     .WithCriteria(() => Build.Paths.Files.Solution.Exists())
     .IsDependentOn("ShowInfo")
     .IsDependentOn("Clean")
@@ -93,10 +93,10 @@ Task("Build")
 /* ---------------------------------------------------------------------------------------------------- */
 /* Execution */
 
-Task("Default")
+Tasks.DefaultTask = Task("Default")
     .IsDependentOn("Build");
 
-Task("Test")
+Tasks.TestTask = Task("Test")
     .WithCriteria(() => Build.Parameters.ShouldRunTests)
     .IsDependentOn("Build")
     .IsDependentOn("TestFixie")
@@ -107,27 +107,27 @@ Task("Test")
     .IsDependentOn("RunReportGenerator")
     .IsDependentOn("RunReportUnit");
 
-Task("Package")
+Tasks.PackageTask = Task("Package")
     .IsDependentOn("Test")
     .IsDependentOn("CreateNuGetPackages");
 
-Task("Publish")
+Tasks.PublishTask = Task("Publish")
     .IsDependentOn("Package")
     .IsDependentOn("PublishNuGetPackages")
     .IsDependentOn("PublishMyGetPackages")
     .IsDependentOn("PublishGitHubRelease");
 
-Task("PostMessage")
+Tasks.PostMessageTask = Task("PostMessage")
     .IsDependentOn("Publish")
     .IsDependentOn("PostMessageToTwitter");
 
-Task("Local")
+Tasks.LocalTask = Task("Local")
     .WithCriteria(() => Build.Parameters.IsLocalBuild)
     .IsDependentOn("Build")
     .IsDependentOn("Test")
     .IsDependentOn("Package");
 
-Task("AppVeyor")
+Tasks.AppVeyorTask = Task("AppVeyor")
     .WithCriteria(() => Build.Parameters.IsRunningOnAppVeyor)
     .IsDependentOn("ShowInfo")
     .IsDependentOn("AppVeyorPrintEnvironmentVariables")

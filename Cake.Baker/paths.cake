@@ -17,6 +17,7 @@ public class Directories
     public DirectoryPath Source { get; }
     public DirectoryPath Artifacts { get; }
     public DirectoryPath Docs { get; }
+    public DirectoryPath Image { get; }
     public DirectoryPath Logs { get; }
     public DirectoryPath Packages { get; }
     public DirectoryPath PackagesNuGet { get; }
@@ -44,6 +45,7 @@ public class Directories
         DirectoryPath source,
         DirectoryPath artifacts,
         DirectoryPath docs,
+        DirectoryPath image,
         DirectoryPath logs,
         DirectoryPath packages,
         DirectoryPath packagesNuGet,
@@ -76,6 +78,7 @@ public class Directories
         Source = source ?? root.Combine("src");
         Artifacts = artifacts ?? root.Combine("artifacts");
         Docs = docs ?? artifacts.Combine("docs");
+        Image = image ?? artifacts.Combine("image");
         Logs = logs ?? artifacts.Combine("logs");
 
         Packages = packages;

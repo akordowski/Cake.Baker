@@ -1,7 +1,7 @@
 /* ---------------------------------------------------------------------------------------------------- */
 /* Task Definitions */
 
-Task("PublishGitHubRelease")
+Tasks.PublishGitHubReleaseTask = Task("PublishGitHubRelease")
     .WithCriteria(() => Build.Parameters.ShouldPublishToGitHub)
     .Does(() => RequireTool(GitReleaseManagerTool, () =>
     {

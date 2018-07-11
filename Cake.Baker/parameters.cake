@@ -232,7 +232,7 @@ public class Parameters
         IntegrationTestFilePattern = integrationTestFilePattern ?? "/**/*.IntegrationTests.dll";
         IntegrationTestProjectPattern = integrationTestProjectPattern ?? @".*\.IntegrationTests\.csproj";
 
-        _postMessage = postMessage.DefaultValue("Version {0} of {1} Addin has just been released, https://www.nuget.org/packages/{1}.");
+        _postMessage = postMessage.DefaultValue("Version {0} of {1} has just been released, https://www.nuget.org/packages/{1}/.");
         _postTwitterMessage = postTwitterMessage;
     }
 }

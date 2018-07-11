@@ -11,6 +11,6 @@ Build
     .SetParameters(
         "Cake.Baker",
         "akordowski",
-        shouldPublishToGitHub: true,
+        shouldPublishToGitHub: false,
         shouldPublishToMyGet: true)
     .Run();

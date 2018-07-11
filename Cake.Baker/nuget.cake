@@ -1,7 +1,7 @@
 /* ---------------------------------------------------------------------------------------------------- */
 /* Task Definitions */
 
-Task("CreateNuGetPackages")
+Tasks.CreateNuGetPackagesTask = Task("CreateNuGetPackages")
     .WithCriteria(() => DirectoryExists(Build.Paths.Directories.Nuspec))
     .Does(() =>
     {
@@ -15,12 +15,15 @@ Task("CreateNuGetPackages")
             var nuspecName = nuspecFile.GetFilenameWithoutExtension().ToString();
             var basePath = Build.Paths.Directories.Nuspec;
 
-            if (DirectoryExists(Build.Paths.Directories.PublishedLibraries.Combine(nuspecName)))
+            if (DirectoryExists(Build.Paths.Directories.Image))
+            {
+                basePath = Build.Paths.Directories.Image;
+            }
+            else if (DirectoryExists(Build.Paths.Directories.PublishedLibraries.Combine(nuspecName)))
             {
                 basePath = Build.Paths.Directories.PublishedLibraries.Combine(nuspecName);
             }
-
-            if (DirectoryExists(Build.Paths.Directories.PublishedApplications.Combine(nuspecName)))
+            else if (DirectoryExists(Build.Paths.Directories.PublishedApplications.Combine(nuspecName)))
             {
                 basePath = Build.Paths.Directories.PublishedApplications.Combine(nuspecName);
             }
@@ -39,37 +42,7 @@ Task("CreateNuGetPackages")
         }
     });
 
-Task("PublishMyGetPackages")
-    .WithCriteria(() => Build.Parameters.ShouldPublishToMyGet)
-    .WithCriteria(() => DirectoryExists(Build.Paths.Directories.PackagesNuGet))
-    .Does(() =>
-    {
-        if (Build.Parameters.CanPublishToMyGet)
-        {
-            var nupkgFiles = GetFiles(Build.Paths.Directories.PackagesNuGet + "/**/*.nupkg");
-
-            foreach (var nupkgFile in nupkgFiles)
-            {
-                NuGetPush(nupkgFile, new NuGetPushSettings
-                {
-                    ApiKey = Build.Credentials.MyGet.ApiKey,
-                    Source = Build.Credentials.MyGet.Source
-                });
-            }
-        }
-        else
-        {
-            Warning("Unable to publish to MyGet, as necessary credentials are not available");
-        }
-    })
-    .OnError(ex =>
-    {
-        Error(ex.Message);
-        Information("{0} Task failed, but continuing with next Task...", "PublishMyGetPackages");
-        publishingError = true;
-    });
-
-Task("PublishNuGetPackages")
+Tasks.PublishNuGetPackagesTask = Task("PublishNuGetPackages")
     .WithCriteria(() => Build.Parameters.ShouldPublishToNuGet)
     .WithCriteria(() => DirectoryExists(Build.Paths.Directories.PackagesNuGet))
     .Does(() =>
@@ -96,5 +69,35 @@ Task("PublishNuGetPackages")
     {
         Error(ex.Message);
         Information("{0} Task failed, but continuing with next Task...", "PublishNuGetPackages");
+        publishingError = true;
+    });
+
+Tasks.PublishMyGetPackagesTask = Task("PublishMyGetPackages")
+    .WithCriteria(() => Build.Parameters.ShouldPublishToMyGet)
+    .WithCriteria(() => DirectoryExists(Build.Paths.Directories.PackagesNuGet))
+    .Does(() =>
+    {
+        if (Build.Parameters.CanPublishToMyGet)
+        {
+            var nupkgFiles = GetFiles(Build.Paths.Directories.PackagesNuGet + "/**/*.nupkg");
+
+            foreach (var nupkgFile in nupkgFiles)
+            {
+                NuGetPush(nupkgFile, new NuGetPushSettings
+                {
+                    ApiKey = Build.Credentials.MyGet.ApiKey,
+                    Source = Build.Credentials.MyGet.Source
+                });
+            }
+        }
+        else
+        {
+            Warning("Unable to publish to MyGet, as necessary credentials are not available");
+        }
+    })
+    .OnError(ex =>
+    {
+        Error(ex.Message);
+        Information("{0} Task failed, but continuing with next Task...", "PublishMyGetPackages");
         publishingError = true;
     });
