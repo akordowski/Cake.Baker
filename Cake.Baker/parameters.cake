@@ -80,6 +80,7 @@ public class Parameters
     public bool PrintAllInfo { get; }
     public bool PrintVersionInfo { get; }
     public bool PrintParametersInfo { get; }
+    public bool PrintMessagesInfo { get; }
     public bool PrintDirectoriesInfo { get; }
     public bool PrintFilesInfo { get; }
     public bool PrintEnvironmentInfo { get; }
@@ -89,15 +90,10 @@ public class Parameters
     public string TestProjectPattern { get; }
     public string IntegrationTestFilePattern { get; }
     public string IntegrationTestProjectPattern { get; }
-    public string PostMessage => String.Format(_postMessage, _builder.Version.Version, Title);
-    public string PostTwitterMessage => _postTwitterMessage != null ? String.Format(_postTwitterMessage, _builder.Version.Version, Title) : PostMessage;
 
     private readonly Builder _builder;
     private readonly ICakeContext _context;
     private readonly BuildSystem _buildSystem;
-
-    private string _postMessage;
-    private string _postTwitterMessage;
 
     public Parameters(
         Builder builder,
@@ -133,6 +129,7 @@ public class Parameters
         bool? printAllInfo,
         bool? printVersionInfo,
         bool? printParametersInfo,
+        bool? printMessagesInfo,
         bool? printDirectoriesInfo,
         bool? printFilesInfo,
         bool? printEnvironmentInfo,
@@ -140,9 +137,7 @@ public class Parameters
         string testFilePattern,
         string testProjectPattern,
         string integrationTestFilePattern,
-        string integrationTestProjectPattern,
-        string postMessage,
-        string postTwitterMessage)
+        string integrationTestProjectPattern)
     {
         _builder = builder;
         _context = builder.Context;
@@ -222,6 +217,7 @@ public class Parameters
         PrintAllInfo = printAllInfo ?? false;
         PrintVersionInfo = printVersionInfo ?? (printAllInfo ?? true);
         PrintParametersInfo = printParametersInfo ?? (printAllInfo ?? true);
+        PrintMessagesInfo = printMessagesInfo ?? (printAllInfo ?? false);
         PrintDirectoriesInfo = printDirectoriesInfo ?? (printAllInfo ?? false);
         PrintFilesInfo = printFilesInfo ?? (printAllInfo ?? false);
         PrintEnvironmentInfo = printEnvironmentInfo ?? (printAllInfo ?? false);
@@ -231,8 +227,5 @@ public class Parameters
         TestProjectPattern = testProjectPattern ?? @".*\.Tests\.csproj";
         IntegrationTestFilePattern = integrationTestFilePattern ?? "/**/*.IntegrationTests.dll";
         IntegrationTestProjectPattern = integrationTestProjectPattern ?? @".*\.IntegrationTests\.csproj";
-
-        _postMessage = postMessage.DefaultValue("Version {0} of {1} has just been released, https://www.nuget.org/packages/{1}/.");
-        _postTwitterMessage = postTwitterMessage;
     }
 }

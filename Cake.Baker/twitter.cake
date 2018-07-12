@@ -15,7 +15,7 @@ Tasks.PostMessageToTwitterTask = Task("PostMessageToTwitter")
                 Build.Credentials.Twitter.ConsumerSecret,
                 Build.Credentials.Twitter.AccessToken,
                 Build.Credentials.Twitter.AccessTokenSecret,
-                Build.Parameters.PostMessage);
+                Build.Messages.TwitterMessage);
 
             Information("Message succcessfully posted.");
         }

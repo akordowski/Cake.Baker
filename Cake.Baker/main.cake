@@ -29,6 +29,7 @@ Tasks.ShowInfoTask = Task("ShowInfo")
     {
         Print(Build.Version, Build.Parameters.PrintVersionInfo);
         Print(Build.Parameters, Build.Parameters.PrintParametersInfo);
+        Print(Build.Messages, Build.Parameters.PrintMessagesInfo);
         Print(Build.Paths.Directories, Build.Parameters.PrintDirectoriesInfo);
         Print(Build.Paths.Files, Build.Parameters.PrintFilesInfo);
         Print(Build.Environment, Build.Parameters.PrintEnvironmentInfo);

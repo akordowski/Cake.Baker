@@ -5,6 +5,7 @@ public class Builder
 
     public Credentials Credentials { get; private set; }
     public Environment Environment { get; private set; }
+    public Messages Messages { get; private set; }
     public Parameters Parameters { get; private set; }
     public Projects Projects { get; private set; }
     public Paths Paths { get; private set; }
@@ -22,6 +23,7 @@ public class Builder
         Version = new VersionInfo(this);
 
         SetEnvironmentVariableNames();
+        SetMessages();
         SetPaths();
         SetToolSettings();
     }
@@ -67,6 +69,18 @@ public class Builder
         return this;
     }
 
+    public Builder SetMessages(
+        string defaultMessage = null,
+        string twitterMessage = null)
+    {
+        Messages = new Messages(
+            this,
+            defaultMessage,
+            twitterMessage);
+
+        return this;
+    }
+
     public Builder SetParameters(
         string title,
         string repositoryOwner,
@@ -100,6 +114,7 @@ public class Builder
         bool? printAllInfo = null,
         bool? printVersionInfo = null,
         bool? printParametersInfo = null,
+        bool? printMessagesInfo = null,
         bool? printDirectoriesInfo = null,
         bool? printFilesInfo = null,
         bool? printEnvironmentInfo = null,
@@ -107,9 +122,7 @@ public class Builder
         string testFilePattern = null,
         string testProjectPattern = null,
         string integrationTestFilePattern = null,
-        string integrationTestProjectPattern = null,
-        string postMessage = null,
-        string postTwitterMessage = null)
+        string integrationTestProjectPattern = null)
     {
         Parameters = new Parameters(
             this,
@@ -145,6 +158,7 @@ public class Builder
             printAllInfo,
             printVersionInfo,
             printParametersInfo,
+            printMessagesInfo,
             printDirectoriesInfo,
             printFilesInfo,
             printEnvironmentInfo,
@@ -152,9 +166,7 @@ public class Builder
             testFilePattern,
             testProjectPattern,
             integrationTestFilePattern,
-            integrationTestProjectPattern,
-            postMessage,
-            postTwitterMessage);
+            integrationTestProjectPattern);
 
         return this;
     }
