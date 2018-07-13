@@ -40,29 +40,55 @@ public class Builder
 
     public Builder SetEnvironmentVariableNames(
         string appVeyorApiTokenVariable = null,
+        string chocolateyApiKeyVariable = null,
+        string chocolateySourceUrlVariable = null,
+        string coverallsRepoTokenVariable = null,
+        string codecovRepoTokenVariable = null,
         string gitHubUsernameVariable = null,
         string gitHubPasswordVariable = null,
+        string gitterTokenVariable = null,
+        string gitterRoomIdVariable = null,
+        string microsoftTeamsWebHookUrlVariable = null,
         string myGetApiKeyVariable = null,
         string myGetSourceVariable = null,
         string nuGetApiKeyVariable = null,
         string nuGetSourceVariable = null,
+        string slackTokenVariable = null,
+        string slackChannelVariable = null,
         string twitterAccessTokenVariable = null,
         string twitterAccessTokenSecretVariable = null,
         string twitterConsumerKeyVariable = null,
-        string twitterConsumerSecretVariable = null)
+        string twitterConsumerSecretVariable = null,
+        string transifexApiTokenVariable = null,
+        string wyamAccessTokenVariable = null,
+        string wyamDeployRemoteVariable = null,
+        string wyamDeployBranchVariable = null)
     {
         Environment = new Environment(
             appVeyorApiTokenVariable,
+            chocolateyApiKeyVariable,
+            chocolateySourceUrlVariable,
+            coverallsRepoTokenVariable,
+            codecovRepoTokenVariable,
             gitHubUsernameVariable,
             gitHubPasswordVariable,
+            gitterTokenVariable,
+            gitterRoomIdVariable,
+            microsoftTeamsWebHookUrlVariable,
             myGetApiKeyVariable,
             myGetSourceVariable,
             nuGetApiKeyVariable,
             nuGetSourceVariable,
+            slackTokenVariable,
+            slackChannelVariable,
             twitterAccessTokenVariable,
             twitterAccessTokenSecretVariable,
             twitterConsumerKeyVariable,
-            twitterConsumerSecretVariable);
+            twitterConsumerSecretVariable,
+            transifexApiTokenVariable,
+            wyamAccessTokenVariable,
+            wyamDeployRemoteVariable,
+            wyamDeployBranchVariable);
 
         Credentials = new Credentials(Context, Environment);
 
@@ -71,11 +97,17 @@ public class Builder
 
     public Builder SetMessages(
         string defaultMessage = null,
+        string gitterMessage = null,
+        string microsoftTeamsMessage = null,
+        string slackMessage = null,
         string twitterMessage = null)
     {
         Messages = new Messages(
             this,
             defaultMessage,
+            gitterMessage,
+            microsoftTeamsMessage,
+            slackMessage,
             twitterMessage);
 
         return this;
@@ -103,10 +135,16 @@ public class Builder
         bool? shouldPackage = null,
         bool? shouldPackageNuGet = null,
         bool? shouldPublish = null,
-        bool? shouldPublishToNuGet = null,
+        bool? shouldPublishToChocolatey = null,
+        bool? shouldPublishToCodecov = null,
+        bool? shouldPublishToCoveralls = null,
         bool? shouldPublishToMyGet = null,
+        bool? shouldPublishToNuGet = null,
         bool? shouldPublishToGitHub = null,
         bool? shouldPost = null,
+        bool? shouldPostToGitter = null,
+        bool? shouldPostToMicrosoftTeams = null,
+        bool? shouldPostToSlack = null,
         bool? shouldPostToTwitter = null,
         bool shouldAppVeyorPrintEnvironmentVariables = false,
         bool shouldAppVeyorUploadArtifacts = false,
@@ -147,10 +185,16 @@ public class Builder
             shouldPackage,
             shouldPackageNuGet,
             shouldPublish,
-            shouldPublishToNuGet,
+            shouldPublishToChocolatey,
+            shouldPublishToCodecov,
+            shouldPublishToCoveralls,
             shouldPublishToMyGet,
+            shouldPublishToNuGet,
             shouldPublishToGitHub,
             shouldPost,
+            shouldPostToGitter,
+            shouldPostToMicrosoftTeams,
+            shouldPostToSlack,
             shouldPostToTwitter,
             shouldAppVeyorPrintEnvironmentVariables,
             shouldAppVeyorUploadArtifacts,

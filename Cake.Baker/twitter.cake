@@ -1,14 +1,14 @@
 /* ---------------------------------------------------------------------------------------------------- */
 /* Task Definitions */
 
-Tasks.PostMessageToTwitterTask = Task("PostMessageToTwitter")
+Tasks.SendMessageToTwitterTask = Task("SendMessageToTwitter")
     .WithCriteria(() => !publishingError)
     .WithCriteria(() => Build.Parameters.ShouldPostToTwitter)
     .Does(() =>
     {
         if (Build.Parameters.CanPostToTwitter)
         {
-            Information("Post message to Twitter...");
+            Information("Send message to Twitter...");
 
             TwitterSendTweet(
                 Build.Credentials.Twitter.ConsumerKey,
@@ -17,15 +17,15 @@ Tasks.PostMessageToTwitterTask = Task("PostMessageToTwitter")
                 Build.Credentials.Twitter.AccessTokenSecret,
                 Build.Messages.TwitterMessage);
 
-            Information("Message succcessfully posted.");
+            Information("Message succcessfully sent.");
         }
         else
         {
-            Warning("Unable to post message to Twitter, as necessary credentials are not available");
+            Warning("Unable to send message to Twitter, as necessary credentials are not available.");
         }
     })
     .OnError(ex =>
     {
         Error(ex.Message);
-        Information("{0} Task failed, but continuing with next Task...", "PostMessageToTwitter");
+        Information("{0} Task failed, but continuing with next Task...", "SendMessageToTwitter");
     });

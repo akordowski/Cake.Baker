@@ -13,12 +13,12 @@ Tasks.PublishGitHubReleaseTask = Task("PublishGitHubRelease")
 
             if (assets == null)
             {
-                Warning("Assets are not available");
+                Warning("Assets are not available.");
             }
 
             if (releaseNotes == null)
             {
-                Warning("Release Notes are not available");
+                Warning("Release Notes are not available.");
             }
 
             new GitHub(Build)
@@ -34,7 +34,7 @@ Tasks.PublishGitHubReleaseTask = Task("PublishGitHubRelease")
         }
         else
         {
-            Warning("Unable to publish to GitHub, as necessary credentials are not available");
+            Warning("Unable to publish to GitHub, as necessary credentials are not available.");
         }
     }))
     .OnError(ex =>

@@ -62,7 +62,7 @@ Tasks.PublishNuGetPackagesTask = Task("PublishNuGetPackages")
         }
         else
         {
-            Warning("Unable to publish to NuGet, as necessary credentials are not available");
+            Warning("Unable to publish to NuGet, as necessary credentials are not available.");
         }
     })
     .OnError(ex =>
@@ -92,7 +92,7 @@ Tasks.PublishMyGetPackagesTask = Task("PublishMyGetPackages")
         }
         else
         {
-            Warning("Unable to publish to MyGet, as necessary credentials are not available");
+            Warning("Unable to publish to MyGet, as necessary credentials are not available.");
         }
     })
     .OnError(ex =>

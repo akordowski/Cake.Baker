@@ -15,9 +15,10 @@ public static class Tasks
     public static CakeTaskBuilder BuildTask { get; set; }
     public static CakeTaskBuilder DefaultTask { get; set; }
     public static CakeTaskBuilder TestTask { get; set; }
+    public static CakeTaskBuilder ImageTask { get; set; }
     public static CakeTaskBuilder PackageTask { get; set; }
     public static CakeTaskBuilder PublishTask { get; set; }
-    public static CakeTaskBuilder PostMessageTask { get; set; }
+    public static CakeTaskBuilder SendMessageTask { get; set; }
     public static CakeTaskBuilder LocalTask { get; set; }
     public static CakeTaskBuilder AppVeyorTask { get; set; }
 
@@ -37,5 +38,5 @@ public static class Tasks
     public static CakeTaskBuilder RunReportUnitTask { get; set; }
 
     // Twitter
-    public static CakeTaskBuilder PostMessageToTwitterTask { get; set; }
+    public static CakeTaskBuilder SendMessageToTwitterTask { get; set; }
 }

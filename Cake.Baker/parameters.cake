@@ -48,24 +48,51 @@ public class Parameters
     public bool ShouldPackageNuGet { get; }
 
     public bool ShouldPublish { get; }
-    public bool ShouldPublishToNuGet { get; }
+    public bool ShouldPublishToChocolatey { get; }
+    public bool ShouldPublishToCodecov { get; }
+    public bool ShouldPublishToCoveralls { get; }
     public bool ShouldPublishToMyGet { get; }
+    public bool ShouldPublishToNuGet { get; }
     public bool ShouldPublishToGitHub { get; }
 
-    public bool CanPublishToNuGet =>
-        !String.IsNullOrEmpty(_builder.Credentials.NuGet.ApiKey) &&
-        !String.IsNullOrEmpty(_builder.Credentials.NuGet.Source);
+    public bool CanPublishToChocolatey =>
+        !String.IsNullOrEmpty(_builder.Credentials.Chocolatey.ApiKey) &&
+        !String.IsNullOrEmpty(_builder.Credentials.Chocolatey.Source);
+
+    public bool CanPublishToCodecov =>
+        !String.IsNullOrEmpty(_builder.Credentials.Codecov.RepoToken);
+
+    public bool CanPublishToCoveralls =>
+        !String.IsNullOrEmpty(_builder.Credentials.Coveralls.RepoToken);
 
     public bool CanPublishToMyGet =>
         !String.IsNullOrEmpty(_builder.Credentials.MyGet.ApiKey) &&
         !String.IsNullOrEmpty(_builder.Credentials.MyGet.Source);
+
+    public bool CanPublishToNuGet =>
+        !String.IsNullOrEmpty(_builder.Credentials.NuGet.ApiKey) &&
+        !String.IsNullOrEmpty(_builder.Credentials.NuGet.Source);
 
     public bool CanPublishToGitHub =>
         !String.IsNullOrEmpty(_builder.Credentials.GitHub.Username) &&
         !String.IsNullOrEmpty(_builder.Credentials.GitHub.Password);
 
     public bool ShouldPost { get; }
+    public bool ShouldPostToGitter { get; }
+    public bool ShouldPostToMicrosoftTeams { get; }
+    public bool ShouldPostToSlack { get; }
     public bool ShouldPostToTwitter { get; }
+
+    public bool CanPostToGitter =>
+        !String.IsNullOrEmpty(_builder.Credentials.Gitter.Token) &&
+        !String.IsNullOrEmpty(_builder.Credentials.Gitter.RoomId);
+
+    public bool CanPostToMicrosoftTeams =>
+        !String.IsNullOrEmpty(_builder.Credentials.MicrosoftTeams.WebHookUrl);
+
+    public bool CanPostToSlack =>
+        !String.IsNullOrEmpty(_builder.Credentials.Slack.Token) &&
+        !String.IsNullOrEmpty(_builder.Credentials.Slack.Channel);
 
     public bool CanPostToTwitter =>
         !String.IsNullOrEmpty(_builder.Credentials.Twitter.ConsumerKey) &&
@@ -118,10 +145,16 @@ public class Parameters
         bool? shouldPackage,
         bool? shouldPackageNuGet,
         bool? shouldPublish,
-        bool? shouldPublishToNuGet,
+        bool? shouldPublishToChocolatey,
+        bool? shouldPublishToCodecov,
+        bool? shouldPublishToCoveralls,
         bool? shouldPublishToMyGet,
+        bool? shouldPublishToNuGet,
         bool? shouldPublishToGitHub,
         bool? shouldPost,
+        bool? shouldPostToGitter,
+        bool? shouldPostToMicrosoftTeams,
+        bool? shouldPostToSlack,
         bool? shouldPostToTwitter,
         bool shouldAppVeyorPrintEnvironmentVariables,
         bool shouldAppVeyorUploadArtifacts,
@@ -198,6 +231,9 @@ public class Parameters
             IsMainRepository &&
             IsTagged;
 
+        ShouldPublishToChocolatey = shouldPublishToChocolatey ?? ShouldPublish;
+        ShouldPublishToCodecov = shouldPublishToCodecov ?? ShouldPublish;
+        ShouldPublishToCoveralls = shouldPublishToCoveralls ?? ShouldPublish;
         ShouldPublishToNuGet = shouldPublishToNuGet ?? ShouldPublish;
         ShouldPublishToMyGet = shouldPublishToMyGet ?? ShouldPublish;
         ShouldPublishToGitHub = shouldPublishToGitHub ?? ShouldPublish;
@@ -208,6 +244,9 @@ public class Parameters
             IsMainRepository &&
             IsTagged;
 
+        ShouldPostToGitter = shouldPostToGitter ?? ShouldPost;
+        ShouldPostToMicrosoftTeams = shouldPostToMicrosoftTeams ?? ShouldPost;
+        ShouldPostToSlack = shouldPostToSlack ?? ShouldPost;
         ShouldPostToTwitter = shouldPostToTwitter ?? ShouldPost;
 
         ShouldAppVeyorPrintEnvironmentVariables = shouldAppVeyorPrintEnvironmentVariables;

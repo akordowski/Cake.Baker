@@ -108,8 +108,11 @@ Tasks.TestTask = Task("Test")
     .IsDependentOn("RunReportGenerator")
     .IsDependentOn("RunReportUnit");
 
+Tasks.ImageTask = Task("Image")
+    .IsDependentOn("Test");
+
 Tasks.PackageTask = Task("Package")
-    .IsDependentOn("Test")
+    .IsDependentOn("Image")
     .IsDependentOn("CreateNuGetPackages");
 
 Tasks.PublishTask = Task("Publish")
@@ -118,14 +121,15 @@ Tasks.PublishTask = Task("Publish")
     .IsDependentOn("PublishMyGetPackages")
     .IsDependentOn("PublishGitHubRelease");
 
-Tasks.PostMessageTask = Task("PostMessage")
+Tasks.SendMessageTask = Task("SendMessage")
     .IsDependentOn("Publish")
-    .IsDependentOn("PostMessageToTwitter");
+    .IsDependentOn("SendMessageToTwitter");
 
 Tasks.LocalTask = Task("Local")
     .WithCriteria(() => Build.Parameters.IsLocalBuild)
     .IsDependentOn("Build")
     .IsDependentOn("Test")
+    .IsDependentOn("Image")
     .IsDependentOn("Package");
 
 Tasks.AppVeyorTask = Task("AppVeyor")
@@ -134,8 +138,9 @@ Tasks.AppVeyorTask = Task("AppVeyor")
     .IsDependentOn("AppVeyorPrintEnvironmentVariables")
     .IsDependentOn("Build")
     .IsDependentOn("Test")
+    .IsDependentOn("Image")
     .IsDependentOn("Package")
     .IsDependentOn("AppVeyorUploadArtifacts")
     .IsDependentOn("AppVeyorUploadTestResults")
     .IsDependentOn("Publish")
-    .IsDependentOn("PostMessage");
+    .IsDependentOn("SendMessage");
