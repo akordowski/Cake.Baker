@@ -119,10 +119,15 @@ Tasks.PublishTask = Task("Publish")
     .IsDependentOn("Package")
     .IsDependentOn("PublishNuGetPackages")
     .IsDependentOn("PublishMyGetPackages")
-    .IsDependentOn("PublishGitHubRelease");
+    .IsDependentOn("PublishGitHubRelease")
+    .IsDependentOn("PublishCodecov")
+    .IsDependentOn("PublishCoveralls");
 
 Tasks.SendMessageTask = Task("SendMessage")
     .IsDependentOn("Publish")
+    .IsDependentOn("SendMessageToGitter")
+    .IsDependentOn("SendMessageToMicrosoftTeams")
+    .IsDependentOn("SendMessageToSlack")
     .IsDependentOn("SendMessageToTwitter");
 
 Tasks.LocalTask = Task("Local")

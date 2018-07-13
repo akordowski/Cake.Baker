@@ -14,12 +14,15 @@ public class Directories
 {
     public DirectoryPath Root { get; }
     public DirectoryPath Nuspec { get; }
+    public DirectoryPath NuspecChocolatey { get; }
+    public DirectoryPath NuspecNuGet { get; }
     public DirectoryPath Source { get; }
     public DirectoryPath Artifacts { get; }
     public DirectoryPath Docs { get; }
     public DirectoryPath Image { get; }
     public DirectoryPath Logs { get; }
     public DirectoryPath Packages { get; }
+    public DirectoryPath PackagesChocolatey { get; }
     public DirectoryPath PackagesNuGet { get; }
     public DirectoryPath PackagesZip { get; }
     public DirectoryPath Published { get; }
@@ -42,12 +45,15 @@ public class Directories
         ICakeContext context,
         DirectoryPath root,
         DirectoryPath nuspec,
+        DirectoryPath nuspecChocolatey,
+        DirectoryPath nuspecNuGet,
         DirectoryPath source,
         DirectoryPath artifacts,
         DirectoryPath docs,
         DirectoryPath image,
         DirectoryPath logs,
         DirectoryPath packages,
+        DirectoryPath packagesChocolatey,
         DirectoryPath packagesNuGet,
         DirectoryPath packagesZip,
         DirectoryPath published,
@@ -68,20 +74,25 @@ public class Directories
     {
         root = root ?? context.MakeAbsolute(context.Directory("./"));
         artifacts = artifacts ?? root.Combine("artifacts");
+        nuspec = nuspec ?? root.Combine("nuspec");
         packages = packages ?? artifacts.Combine("packages");
         published = published ?? artifacts.Combine("published");
         tests = tests ?? artifacts.Combine("tests");
-        testReports = testReports ??  tests.Combine("reports");
+        testReports = testReports ?? tests.Combine("reports");
 
         Root = root;
-        Nuspec = nuspec ?? root.Combine("nuspec");
         Source = source ?? root.Combine("src");
         Artifacts = artifacts ?? root.Combine("artifacts");
         Docs = docs ?? artifacts.Combine("docs");
         Image = image ?? artifacts.Combine("image");
         Logs = logs ?? artifacts.Combine("logs");
 
+        Nuspec = nuspec;
+        NuspecChocolatey = nuspecChocolatey ?? nuspec.Combine("chocolatey");
+        NuspecNuGet = nuspecNuGet ?? nuspec.Combine("nuget");
+
         Packages = packages;
+        PackagesChocolatey = packagesChocolatey ?? packages.Combine("chocolatey");
         PackagesNuGet = packagesNuGet ?? packages.Combine("nuget");
         PackagesZip = packagesZip ?? packages.Combine("zip");
 

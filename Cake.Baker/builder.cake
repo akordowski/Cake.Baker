@@ -96,7 +96,7 @@ public class Builder
     }
 
     public Builder SetMessages(
-        string defaultMessage = null,
+        string message = null,
         string gitterMessage = null,
         string microsoftTeamsMessage = null,
         string slackMessage = null,
@@ -104,7 +104,7 @@ public class Builder
     {
         Messages = new Messages(
             this,
-            defaultMessage,
+            message,
             gitterMessage,
             microsoftTeamsMessage,
             slackMessage,
@@ -218,12 +218,15 @@ public class Builder
     public Builder SetPaths(
         DirectoryPath rootDirectoryPath = null,
         DirectoryPath nuspecDirectoryPath = null,
+        DirectoryPath nuspecChocolateyDirectoryPath = null,
+        DirectoryPath nuspecNuGetDirectoryPath = null,
         DirectoryPath sourceDirectoryPath = null,
         DirectoryPath artifactsDirectoryPath = null,
         DirectoryPath docsDirectoryPath = null,
         DirectoryPath imageDirectoryPath = null,
         DirectoryPath logsDirectoryPath = null,
         DirectoryPath packagesDirectoryPath = null,
+        DirectoryPath packagesChocolateyDirectoryPath = null,
         DirectoryPath packagesNuGetDirectoryPath = null,
         DirectoryPath packagesZipDirectoryPath = null,
         DirectoryPath publishedDirectoryPath = null,
@@ -259,12 +262,15 @@ public class Builder
             Context,
             rootDirectoryPath,
             nuspecDirectoryPath,
+            nuspecChocolateyDirectoryPath,
+            nuspecNuGetDirectoryPath,
             sourceDirectoryPath,
             artifactsDirectoryPath,
             docsDirectoryPath,
             imageDirectoryPath,
             logsDirectoryPath,
             packagesDirectoryPath,
+            packagesChocolateyDirectoryPath,
             packagesNuGetDirectoryPath,
             packagesZipDirectoryPath,
             publishedDirectoryPath,

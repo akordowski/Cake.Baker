@@ -8,12 +8,16 @@ Tasks.CreateNuGetPackagesTask = Task("CreateNuGetPackages")
         Information("Creating NuGet Packages...");
         CleanDirectory(Build.Paths.Directories.PackagesNuGet);
 
-        var nuspecFiles = GetFiles(Build.Paths.Directories.Nuspec + "/**/*.nuspec");
+        var nuspecPath = DirectoryExists(Build.Paths.Directories.NuspecNuGet)
+            ? Build.Paths.Directories.NuspecNuGet
+            : Build.Paths.Directories.Nuspec;
+
+        var nuspecFiles = GetFiles(nuspecPath + "/**/*.nuspec");
 
         foreach (var nuspecFile in nuspecFiles)
         {
-            var nuspecName = nuspecFile.GetFilenameWithoutExtension().ToString();
             var basePath = Build.Paths.Directories.Nuspec;
+            var nuspecName = nuspecFile.GetFilenameWithoutExtension().ToString();
 
             if (DirectoryExists(Build.Paths.Directories.Image))
             {

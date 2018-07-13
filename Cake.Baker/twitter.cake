@@ -8,7 +8,7 @@ Tasks.SendMessageToTwitterTask = Task("SendMessageToTwitter")
     {
         if (Build.Parameters.CanPostToTwitter)
         {
-            Information("Send message to Twitter...");
+            Information("Sending message to Twitter...");
 
             TwitterSendTweet(
                 Build.Credentials.Twitter.ConsumerKey,

@@ -1,6 +1,8 @@
 public class Messages
 {
-    public string DefaultMessage => FormatMessage(_defaultMessage);
+    public static string DefaultMessage = "Version {0} of {1} has just been released, https://www.nuget.org/packages/{1}/.";
+
+    public string Message => FormatMessage(_message);
     public string GitterMessage => FormatMessage(_gitterMessage);
     public string MicrosoftTeamsMessage => FormatMessage(_microsoftTeamsMessage);
     public string SlackMessage => FormatMessage(_slackMessage);
@@ -8,7 +10,7 @@ public class Messages
 
     private readonly Builder _builder;
 
-    private readonly string _defaultMessage;
+    private readonly string _message;
     private readonly string _gitterMessage;
     private readonly string _microsoftTeamsMessage;
     private readonly string _slackMessage;
@@ -16,7 +18,7 @@ public class Messages
 
     public Messages(
         Builder builder,
-        string defaultMessage,
+        string message,
         string gitterMessage,
         string microsoftTeamsMessage,
         string slackMessage,
@@ -24,13 +26,11 @@ public class Messages
     {
         _builder = builder;
 
-        var message = "Version {0} of {1} has just been released, https://www.nuget.org/packages/{1}/.";
-
-        _defaultMessage = defaultMessage ?? message;
-        _gitterMessage = gitterMessage ?? "@/all " + _defaultMessage;
-        _microsoftTeamsMessage = microsoftTeamsMessage ?? "@/all " + _defaultMessage;
-        _slackMessage = slackMessage ?? "@/all " + _defaultMessage;
-        _twitterMessage = twitterMessage ?? _defaultMessage;
+        _message = message ?? DefaultMessage;
+        _gitterMessage = gitterMessage ?? "@/all " + _message;
+        _microsoftTeamsMessage = microsoftTeamsMessage ?? "@/all " + _message;
+        _slackMessage = slackMessage ?? "@/all " + _message;
+        _twitterMessage = twitterMessage ?? _message;
     }
 
     private string FormatMessage(string message)
