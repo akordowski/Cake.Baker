@@ -22,7 +22,7 @@ public class Projects
     {
         ICakeContext context = builder.Context;
 
-        if (context.FileExists(builder.Paths.Files.Solution))
+        if (builder.Paths.Files.Solution != null && context.FileExists(builder.Paths.Files.Solution))
         {
             var configuration = builder.Parameters.Configuration;
             var platformTarget = builder.ToolSettings.UsingBuildPlatformTarget;
