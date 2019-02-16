@@ -1,4 +1,4 @@
-#load nuget:https://www.myget.org/F/arkord/api/v2?package=Cake.Baker&version=0.1.0 //&prerelease
+#load nuget:https://www.myget.org/F/arkord/api/v2?package=Cake.Baker&version=0.11.0
 
 Task("PublishCakeBaker")
     .IsDependentOn("ShowInfo")
